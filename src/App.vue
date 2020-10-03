@@ -13,7 +13,7 @@
         <footer>
             <md-bottom-bar style="background-color: #1f2430;">
                 <div class="footeritem"><a class="footerlink" target="_blank" href="https://github.com/androlo/logmor">Project Page</a></div>
-                <div class="footeritem"><a class="footerlink" target="_blank" href="https://github.com/androlo/logmor/docs/tutorial.md">Tutorial</a></div>
+                <div class="footeritem"><a class="footerlink" target="_blank" href="https://github.com/androlo/logmor/blob/main/docs/tutorial.md">Tutorial</a></div>
             </md-bottom-bar>
             <cookie-law theme="base" buttonText="OK" storageType="cookies" storageName="LogMor.CookieAlert"
                         message="This page uses cookies for Your convenience."></cookie-law>

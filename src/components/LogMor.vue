@@ -104,7 +104,7 @@ export default class LogMor extends Vue {
         if (theme && 'name' in theme) {
             return theme;
         } else {
-            return {name: 'darcula', label: 'Darcula'};
+            return {name: 'mbo', label: 'MBO'};
         }
     }
 
@@ -132,6 +132,9 @@ export default class LogMor extends Vue {
         const cookieTxt = Vue.$cookies.get(EDITOR_CONTENT_COOKIE);
         if (cookieTxt && typeof cookieTxt === 'string') {
             this.ide.setValue(cookieTxt);
+        } else {
+            this.ide.setValue(JERY_AND_GERGE);
+            Vue.$cookies.set(EDITOR_CONTENT_COOKIE, JERY_AND_GERGE);
         }
     }
 
@@ -270,6 +273,41 @@ const THEME_OPTIONS = [
     {name: 'yonce', label: 'Yonce'},
     {name: 'zenburn', label: 'Zenburn'}
 ];
+
+const JERY_AND_GERGE = `// Fairness in receiving gifts.
+
+// 1. Gerge and Jery may or may not receive IPADS
+hyp GergeIPAD "Gerge get IPAD" "Gerge don't get IPAD"
+hyp JeryIPAD \t"Jery get IPAD"  "Jery don't get IPAD"
+
+// 2. Gerges reaction to him and Jery receiving, or not receiving, IPADs.
+hyp GergeMood "Gerge becomes happy" "Gerge becomes sad"
+
+// If both gets an IPAD, Gerge should be happy.
+rule BothGetRule = GergeIPAD.pos and JeryIPAD.pos and GergeMood.pos is good
+
+// If one of them gets an IPAD but not the other, Gerge should be sad.
+rule MoodRuleOnlyOne = (GergeIPAD.pos xor JeryIPAD.pos) and GergeMood.neg is good
+
+// The two rules above combined into one.
+rule MoodRule = BothGetRule or MoodRuleOnlyOne
+
+// If neither of the two gets an IPAD we will be indifferent - regardless of Gerge's mood.
+rule IPADIndifferenceRule = GergeIPAD.neg and JeryIPAD.neg and GergeMood.either
+
+solver GergeSolver "My Gerge solver"
+
+// Apply the fairness rule.
+solver GergeSolver apply MoodRule
+
+// Omit the cases that we are indifferent to.
+solver GergeSolver omit IPADIndifferenceRule
+
+// Run the solver
+solver GergeSolver run
+
+// Print the results
+solver GergeSolver print`;
 
 </script>
 
