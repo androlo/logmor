@@ -1,0 +1,35 @@
+// Is it morally right to steal food?
+
+// Hypotheticals.
+hyp BreadTheft "Person X stole some food." "Person X did not steal any food."
+hyp StarvingChildren "The children of person X are starving." "The children of person X are not starving."
+
+// true + true: person X stole food because his children were starving.
+// true + false: person X stole food despite his children being well fed.
+// false + true: person X has not stolen any food, even though his children are starving.
+// false + false: person X has not stolen any food, and his children are well fed.
+
+// Rules
+
+// This rule states that the stealing of food is morally acceptable (or good) if
+// the children of person X is starving.
+rule ChildrenRule = BreadTheft.pos and StarvingChildren.pos is good
+
+// This rule will be used to filter out states that we are indifferent to, meaning we
+// either consider them to be neutral, or we simply don't care to judge them at all.
+rule IndifferenceRule = BreadTheft.false and StarvingChildren.either
+
+// Declare a solver for these hypotheticals and rules.
+solver MySolver "The solver used here."
+
+// Apply the "theft is good when children are starving" rule.
+solver MySolver apply ChildrenRule
+
+// Omit the cases that we are indifferent to.
+solver MySolver omit IndifferenceRule
+
+// Run the solver. This is when the results are actually computed.
+solver MySolver run
+
+// Print the results - sends the output to be presented in the application.
+solver MySolver print

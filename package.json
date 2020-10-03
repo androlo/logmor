@@ -1,0 +1,111 @@
+{
+  "name": "logmor",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test": "jest"
+  },
+  "dependencies": {
+    "chevrotain": "^7.0.2",
+    "codemirror": "^5.58.0",
+    "logic-solver": "^2.0.1",
+    "vue": "^2.6.12",
+    "vue-cookie-law": "^1.13.3",
+    "vue-cookies": "^1.7.4",
+    "vue-material": "^1.0.0-beta-15",
+    "vue-select": "^3.10.8"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.1",
+    "@typescript-eslint/eslint-plugin": "^3.10.1",
+    "@typescript-eslint/parser": "^3.10.1",
+    "@vue/cli-plugin-babel": "~4.4.0",
+    "@vue/cli-plugin-eslint": "~4.4.0",
+    "@vue/cli-plugin-typescript": "^4.5.6",
+    "@vue/cli-service": "~4.4.0",
+    "@vue/eslint-config-typescript": "^5.1.0",
+    "@vue/test-utils": "^1.1.0",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-inline-import": "^3.0.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "jest": "^26.4.2",
+    "ts-jest": "^26.4.0",
+    "ts-loader": "^8.0.4",
+    "typescript": "^3.9.7",
+    "vue-class-component": "^7.2.6",
+    "vue-jest": "^3.0.7",
+    "vue-property-decorator": "^9.0.0",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      ".*\\.(vue)$": "vue-jest",
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost/",
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended",
+      "@vue/typescript/recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2020
+    },
+    "rules": {
+      "variable-name": 0,
+      "interface-name": 0,
+      "trailing-comma": 0,
+      "no-console": 0,
+      "trailing-whitespace": 0,
+      "no-inferrable-types": 0,
+      "no-constant-condition": 0,
+      "@typescript-eslint/no-this-alias": 0,
+      "@typescript-eslint/no-explicit-any": 1,
+      "@typescript-eslint/explicit-module-boundary-types": 1,
+      "@typescript-eslint/no-empty-function": 0,
+      "@typescript-eslint/ban-ts-comment": 1,
+      "no-labels": "off",
+      "no-unused-vars": "off",
+      "indent": [
+        "error",
+        4
+      ],
+      "lines-between-class-members": "off",
+      "space-before-function-paren": "off",
+      "object-curly-spacing": "off",
+      "padded-blocks": "off",
+      "semi": [
+        2,
+        "always"
+      ]
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
+
+html, body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+#app {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.mainTitle {
+    font-family: 'Merriweather', sans-serif;
+}
+
+#toolbar {
+    height: 350px;
+    background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.5)), url("./assets/school_of_athens.png") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.greenchip {
+    margin: 5px;
+    background-color: #1f7244 !important;
+}
+
+.redchip {
+    margin: 5px;
+    background-color: #772820 !important;
+}
+
+.bluechip {
+    margin: 5px;
+    background-color: #213b62 !important;
+}
+
+.datacard {
+    margin: 0px !important;
+}
+
+.footeritem {
+    margin: 1em 5em 1em 1em;
+    color: #bcbcbc !important;
+}
+
+.footerlink {
+    color: #bcbcbc !important;
+}
+
+.footerlink a:link a:visited a:hover a:active{
+    color: #bcbcbc !important;
+}
