@@ -940,7 +940,7 @@ const solve = (solver: any, ec: ExecutionController): Set<string>[] => {
     return solutions;
 };
 
-const setsAreEqual = (s1: Set<string>, s2: Set<string>) => {
+export const setsAreEqual = (s1: Set<string>, s2: Set<string>) => {
     if (s1.size !== s2.size) {
         return false;
     }
@@ -952,7 +952,7 @@ const setsAreEqual = (s1: Set<string>, s2: Set<string>) => {
     return true;
 };
 
-const arrsAreEqual = (arr1: string[], arr2: string[]): boolean => {
+export const arrsAreEqual = (arr1: string[], arr2: string[]): boolean => {
     if (arr1.length !== arr2.length) {
         return false;
     }
@@ -964,7 +964,7 @@ const arrsAreEqual = (arr1: string[], arr2: string[]): boolean => {
     return true;
 };
 
-const getArrsByComp = (arr1: string[][], arr2: string[][], comp: (a1: string[], a2: string[]) => boolean): string[][] => {
+export const getArrsByComp = (arr1: string[][], arr2: string[][], comp: (a1: string[], a2: string[]) => boolean): string[][] => {
     const res: string[][] = [];
     for (let i = 0; i < arr1.length; i++) {
         const e = arr1[i];
@@ -978,7 +978,7 @@ const getArrsByComp = (arr1: string[][], arr2: string[][], comp: (a1: string[], 
     return res;
 };
 
-const formulaToString = (formulas: any, logic: string): string => {
+export const formulaToString = (formulas: any, logic: string): string => {
     let str = '(';
 
     for (let i = 0; i < formulas.length; i++) {
@@ -998,28 +998,23 @@ const formulaToString = (formulas: any, logic: string): string => {
                 str += 'not';
                 console.log(op);
                 str += ` ${formulaToString([op.operand], 'not')} `;
+            } else if (op.type === 'implies' || op.type === 'equiv') {
+                str += `${formulaToString([op.A, op.B], op.type)}`;
             } else {
-                str += ` ${formulaToString(op.operands, op.type)} `;
+                str += `${formulaToString(op.operands, op.type)}`;
             }
         }
 
-        if (i + 1 < formulas.length)
+        if (i + 1 < formulas.length) {
             str += ` ${logic} `;
+        }
 
     }
 
     str += ')';
-    return str;
-};
-
-const nameToFormatted = (name: string): string => {
-    if (name === 'and') {
-        return 'And';
-    } else if (name === 'or') {
-        return 'Or';
-    } else if (name === 'xor') {
-        return 'Xor';
-    } else {
-        return 'Implies';
+    // Trim superfluous parantheses (TODO).
+    while (str.length >= 4 && str[0] === '(' && str[1] == '(' && str[str.length - 1] === ')' && str[str.length - 2] === ')') {
+        str = str.slice(1, -1);
     }
+    return str;
 };
