@@ -59,9 +59,8 @@
                 </md-card-header>
                 <md-card-content>
                     <p>
-                        The total number of states is the number of possible combinations of hypotheticals. It is the
-                        same
-                        as the total number of good, bad, and neutral states.
+                        The total number of states is the number of possible combinations of hypotheticals. It is also the
+                        sum of the amount of good, bad, and neutral states.
                     </p>
                 </md-card-content>
             </md-card>

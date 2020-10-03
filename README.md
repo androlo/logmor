@@ -1,7 +1,7 @@
 # The Logical Morality App
 
 - [The Logical Morality App](#the-logical-morality-app)
-  * [Motivation and Usage](#motivation-and-usage)
+  * [Motivation](#motivation)
   * [Tutorial and Docs](#tutorial-and-docs)
   * [Running](#running)
     + [Compiles and hot-reloads for development](#compiles-and-hot-reloads-for-development)
@@ -52,9 +52,9 @@ solver GergeSolver print
 
 The application will find all good, bad, and neutral states and list them, and also show some additional metrics such as the balance between the different types of choices.
 
-![Output image](./docs/img/logmor_app_output1.png)
+Test this script directly on the webpage: https://androlo.github.io
 
-## Motivation and Usage
+## Motivation
 
 This system focuses on the computational part of moral judgements, using booleans to model hypotheticals, and logical formulas for moral rules. The system does not do any interpretation of the plain speech formulations of those things. 
 
@@ -70,11 +70,14 @@ It would be extremely hard to make a more or less complete language for modeling
 
 ## Tutorial and Docs
 
-A tutorial can be found here: aaaaa.
+A tutorial can be found here: https://github.com/androlo/logmor/blob/main/docs/tutorial.md.
 
-The documentation for the app can be found here: aaaaa.
+The complete documentation for the app can be found here: TODO
 
 ## Running
+
+**NOTE**: This app is only made open source so that anyone who wants can verify that the app does not contain any malignant code. It is not meant to be an open collaboration project, and the author is under no obligation to provide support for anyone who attempts to download and run the code themselves, or to people who wants to create a fork - although people are of course more than welcome to do that if they want (check the MIT licence).
+
 ```
 npm install
 ```

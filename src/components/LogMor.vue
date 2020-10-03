@@ -2,8 +2,11 @@
     <div>
         <md-card style="background-color: #f5f5f5; margin-bottom: 0.5em;">
             <md-card-content>
-                <div class="md-display-2 mainTitle" style="margin-bottom: 0.3em;text-align: center; color: #474747">
+                <div class="md-display-3 mainTitle" style="margin-bottom: 0.3em;text-align: center; color: #474747">
                     Logical Morality
+                </div>
+                <div class="md-headline" style="margin-bottom: 0.3em;text-align: center; color: #474747">
+                    νερςιοη 0.1 (βετα)
                 </div>
                 <div class="md-layout" style="margin-bottom: 0.5em;">
                     <div class="md-layout-item md-size-15">
@@ -314,6 +317,12 @@ solver GergeSolver print`;
 <style>
 
 @import '~vue-select/dist/vue-select.css';
+
+.CodeMirror {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #dddddd;
+}
 
 .output {
     border-style: solid;
