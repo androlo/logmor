@@ -69,7 +69,7 @@
             <md-card class="datacard">
                 <md-card-header>
                     <md-card-header-text>
-                        <div class="md-title">{{ result.categoryAmoral }}
+                        <div class="md-title">{{ Math.round(100*(result.aLevel[0] / result.aLevel[1])) + '%' }}
                         </div>
                         <div class="md-subhead">Level of amorality
                         </div>
@@ -77,9 +77,8 @@
                 </md-card-header>
                 <md-card-content>
                     <p>
-                        The level of amorality is number of neutral cases divided by the number of total cases. Here,
-                        {{ result.aLevel[0] + '/' + result.aLevel[1] }}
-                        are neutral.
+                        The level of amorality is the percentage of all states that are neutral. Here,
+                        {{ result.aLevel[0] + '/' + result.aLevel[1] }} states are neutral.
                     </p>
                 </md-card-content>
             </md-card>
@@ -87,7 +86,7 @@
             <md-card class="datacard">
                 <md-card-header>
                     <md-card-header-text>
-                        <div class="md-title">{{ result.categoryMoral }}
+                        <div class="md-title">{{ result.mBalance === undefined ? '-' : Math.round(100*(result.mBalance[0] / result.mBalance[1])) + '%' }}
                         </div>
                         <div class="md-subhead">Permissiveness
                         </div>
@@ -95,10 +94,10 @@
                 </md-card-header>
                 <md-card-content>
                     <p>
-                        The permissiveness is the number of good cases divided by the total number of good and bad
+                        The permissiveness is the percentage of good cases among the total number of good and bad
                         cases. Here, {{
                             result.mBalance === undefined ? `the value can't be computed because there are 0 good or bad cases combined.` : result.mBalance[0] + '/' + result.mBalance[1] + ' states are good.'
-                        }}
+                        }}.
                     </p>
                 </md-card-content>
             </md-card>
@@ -129,7 +128,7 @@
                         sophistication as well.
                     </p>
                     <p>
-                        More specifically, the moral sophistication value 'S' is computed as 'S = (1 - E)*P' where 'E'
+                        Mathematically, the moral sophistication value 'S' is computed as 'S = (1 - E)*P' where 'E'
                         is the normalized entropy value (found below), and 'P = N/T' is the number of non-neutral cases
                         (N) divided by the total number of cases (T).
                     </p>
@@ -148,17 +147,12 @@
                     <p>
                         Moral entropy is a measure of bias that takes the total number of choices
                         and the balance between good and bad choices into account. A lower value means a higher bias.
-                        For
-                        any number of states, the highest entropy is for an even split between good and bad, and the
-                        lowest
-                        is
-                        with only 1 good (or bad) choice because the extremes (0 and all choices) are treated as special
-                        cases.
-                        The entropy also gets a larger spread the more possible states there are, e.g. 1 good choice out
-                        of
-                        5
-                        states has a higher entropy (less bias) than 1 good out of 10. The local scale is the minimum
-                        and maximum entropy for the specific system in question.
+                        For any number of states, the highest entropy is for an even split between good and bad, and the
+                        lowest is with only 1 good (or bad) choice because the extremes (0 and all choices) are treated
+                        as special
+                        cases. The entropy also gets a larger spread the more possible states there are, e.g. 1 good
+                        choice out of 5
+                        states has a higher entropy (less bias) than 1 good out of 10.
                     </p>
                 </md-card-content>
             </md-card>

@@ -41,30 +41,10 @@ export interface ConsoleMessage {
 // Comparisons. Only supports 'similarity' atm.
 export type CompDataTypeID = 'similarity';
 
-// Moral category - comparing the number of good vs. bad moral states.
-export type MoralCategory =
-    'absolutely permissive'
-    | 'permissive'
-    | 'balanced'
-    | 'forbidding'
-    | 'absolutely forbidding'
-    | 'indeterminable';
-
-// Amoral category - comparing the number of neutral vs good/bad states.
-export type AmoralCategory =
-    'absolutely amoral'
-    | 'amoral'
-    | 'balanced'
-    | 'moral'
-    | 'absolutely moral'
-    | 'indeterminable';
-
 // Result from running a solver.
 export type ResultDataSolver = {
     solverID: string;
     solverMeta: string;
-    categoryMoral: MoralCategory;
-    categoryAmoral: AmoralCategory;
     hyps: [string, string, string][];
     numHyps: number;
     numCases: number;
@@ -617,8 +597,6 @@ export default class Interpreter extends BaseCstVisitor {
 
         const solverID = solverVar.id;
         const solverMeta = solverVar.meta;
-        let categoryMoral: MoralCategory;
-        let categoryAmoral: AmoralCategory;
 
         // Total number of hypotheticals.
         const numHyps = hyps.length;
@@ -636,37 +614,6 @@ export default class Interpreter extends BaseCstVisitor {
         let mEntropy: number | undefined = undefined;
         let mEntropyNorm: number | undefined = undefined;
         let mEntropyScale: [number, number] | undefined = undefined;
-
-        // Morality
-        if (numGoodBadCases === 0) {
-            categoryMoral = 'indeterminable';
-        } else if (numGoodCases === numGoodBadCases) {
-            categoryMoral = 'absolutely permissive';
-        } else if (numGoodCases === numBadCases) {
-            categoryMoral = 'balanced';
-        } else if (numGoodCases === 0) {
-            categoryMoral = 'absolutely forbidding';
-        } else if (numGoodCases > numBadCases) {
-            categoryMoral = 'permissive';
-        } else {
-            categoryMoral = 'forbidding';
-        }
-
-        // Amorality
-        const casesHalf = numCases / 2;
-        if (numNeutralCases === numCases) {
-            categoryAmoral = 'indeterminable';
-        } else if (numNeutralCases === numCases) {
-            categoryAmoral = 'absolutely amoral';
-        } else if (numNeutralCases === casesHalf) {
-            categoryAmoral = 'balanced';
-        } else if (numNeutralCases === 0) {
-            categoryAmoral = 'absolutely moral';
-        } else if (numNeutralCases > casesHalf) {
-            categoryAmoral = 'amoral';
-        } else {
-            categoryAmoral = 'moral';
-        }
 
         // Balance of good and bad, and entropy.
 
@@ -772,8 +719,8 @@ export default class Interpreter extends BaseCstVisitor {
 
 
         // Get string representation of the rules - both ordinary rules and neutrals.
-        const formulaRes = formulaToString(solverVar.rules, 'and').slice(1, -1);
-        const formulaCon = formulaToString(solverVar.pruned, 'and').slice(1, -1);
+        const formulaRes = formulaToString(solverVar.rules, 'and');
+        const formulaCon = formulaToString(solverVar.pruned, 'and');
 
         // We convert the variable mappings to an array since the solver results
         // is a presentation object, and we want it to map directly to JSON.
@@ -790,8 +737,6 @@ export default class Interpreter extends BaseCstVisitor {
         const results: ResultDataSolver = {
             solverID,
             solverMeta,
-            categoryMoral,
-            categoryAmoral,
             mBalance,
             aLevel,
             mEntropy,

@@ -102,9 +102,6 @@ export class InterpreterJSError extends Error {
 export const LMParserErrorProvider = {
 
     buildMismatchTokenMessage: function (options: BuildMismatchTokenOpts) {
-        console.log("BuildMismatch");
-        console.log(options);
-
         switch (options.expected.name) {
         case 'ID':
             if (options.ruleName === 'hypDeclaration') {
@@ -148,9 +145,6 @@ export const LMParserErrorProvider = {
     },
 
     buildNotAllInputParsedMessage: function (options: NotAllInputParsedOpts) {
-        console.log("NotAllParsed");
-        console.log(options);
-
         switch (options.firstRedundant.image) {
         case 'hyp':
             return `unexpected 'hyp'. Rule declarations must be between hyp declarations and solver declarations.`;
@@ -167,9 +161,6 @@ export const LMParserErrorProvider = {
     },
 
     buildNoViableAltMessage: function (options: NoViableAltOpts) {
-        console.log("NoViable");
-        console.log(options);
-
         if (options.previous) {
             switch (options.previous.tokenType.name) {
             case 'Def':
@@ -188,9 +179,6 @@ export const LMParserErrorProvider = {
     },
 
     buildEarlyExitMessage: function (options: EarlyExitOpts) {
-        console.log("EarlyExit");
-        console.log(options);
-
         return defaultParserErrorProvider.buildEarlyExitMessage(options);
     }
 
