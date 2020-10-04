@@ -717,7 +717,6 @@ export default class Interpreter extends BaseCstVisitor {
             }
         }
 
-
         // Get string representation of the rules - both ordinary rules and neutrals.
         const formulaRes = formulaToString(solverVar.rules, 'and');
         const formulaCon = formulaToString(solverVar.pruned, 'and');

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <md-card style="background-color: #f5f5f5; margin-bottom: 0.5em;">
+        <md-card style="background-color: #ececec; margin-bottom: 0.5em;">
             <md-card-content>
                 <div class="md-display-3 mainTitle" style="margin-bottom: 0.3em;text-align: center; color: #474747">
                     Logical Morality
@@ -23,7 +23,7 @@
                 <md-button :disabled="isEvaluating" @click="submitClear">Clear</md-button>
             </md-card-actions>
         </md-card>
-        <md-card style="background-color: #f5f5f5;">
+        <md-card style="background-color: #ececec;">
             <md-card-header>
                 <div class="md-display-1">Output</div>
             </md-card-header>
