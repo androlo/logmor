@@ -10,7 +10,7 @@ import {
     TAnd, TDef, TEq, TID, TImpl, TLParen,
     TOr, TQUOTED_STRING, TRParen, TRule, TRun,
     TSolver, TXor, TSim, TCompare, TDot, TBoolLit,
-    TIs, TMoralLit, THyp, TSolverRuleOP, TPrint
+    TIs, TMoralLit, THyp, TSolverRuleOP, TPrint, TNot
 } from './Tokens';
 import {LMParserErrorProvider} from "./Errors";
 
@@ -22,7 +22,7 @@ export interface ParserResult {
 
 const LLexer = new Lexer(allTokens);
 
-export default class Parser extends CstParser {
+export class Parser extends CstParser {
     public static createParser(): Parser {
         const parser = new Parser();
         parser.performSelfAnalysis();
@@ -37,30 +37,36 @@ export default class Parser extends CstParser {
 
     private readonly parenthesizedExpression = this.RULE('parenthesizedExpression', () => {
         this.CONSUME(TLParen);
-        this.SUBRULE(this.logicalImplExpression);
+        this.SUBRULE(this.logicalEQExpression);
         this.CONSUME(TRParen);
     });
 
     private readonly primaryExpression = this.RULE('primaryExpression', () => {
         this.OR([
-            {
-                ALT: () => {
-                    this.CONSUME(TID);
-                    this.OPTION(() => {
-                        this.CONSUME(TDot);
-                        this.CONSUME(TBoolLit);
-                    });
-                }
-            },
+            {ALT: () => this.CONSUME(TID)},
             {ALT: () => this.SUBRULE(this.parenthesizedExpression)}
+        ]);
+        this.OPTION(() => {
+            this.CONSUME(TDot);
+            this.CONSUME(TBoolLit);
+        });
+    });
+
+    private readonly logicalNOTExpression = this.RULE('logicalNOTExpression', () => {
+        this.OR([
+            {ALT: () => {
+                this.CONSUME(TNot);
+                this.SUBRULE(this.logicalEQExpression);
+            }},
+            {ALT: () => this.SUBRULE(this.primaryExpression)}
         ]);
     });
 
     private readonly logicalANDExpression = this.RULE('logicalANDExpression', () => {
-        this.SUBRULE(this.primaryExpression);
+        this.SUBRULE(this.logicalNOTExpression);
         this.MANY(() => {
             this.CONSUME(TAnd);
-            this.SUBRULE2(this.primaryExpression);
+            this.SUBRULE2(this.logicalNOTExpression);
         });
     });
 
@@ -80,19 +86,19 @@ export default class Parser extends CstParser {
         });
     });
 
-    private readonly logicalEQExpression = this.RULE('logicalEQExpression', () => {
+    private readonly logicalImplExpression = this.RULE('logicalImplExpression', () => {
         this.SUBRULE(this.logicalORExpression);
         this.MANY(() => {
-            this.CONSUME(TEq);
+            this.CONSUME(TImpl);
             this.SUBRULE2(this.logicalORExpression);
         });
     });
 
-    private readonly logicalImplExpression = this.RULE('logicalImplExpression', () => {
-        this.SUBRULE(this.logicalEQExpression);
+    private readonly logicalEQExpression = this.RULE('logicalEQExpression', () => {
+        this.SUBRULE(this.logicalImplExpression);
         this.MANY(() => {
-            this.CONSUME(TImpl);
-            this.SUBRULE2(this.logicalEQExpression);
+            this.CONSUME(TEq);
+            this.SUBRULE2(this.logicalImplExpression);
         });
     });
 
@@ -107,7 +113,7 @@ export default class Parser extends CstParser {
         this.CONSUME(TRule);
         this.CONSUME(TID);
         this.CONSUME(TDef);
-        this.SUBRULE(this.logicalImplExpression);
+        this.SUBRULE(this.logicalEQExpression);
         this.OPTION(() => {
             this.CONSUME(TIs);
             this.CONSUME(TMoralLit);

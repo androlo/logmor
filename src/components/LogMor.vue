@@ -17,9 +17,13 @@
                 <div>
                     <textarea id="ide"></textarea>
                 </div>
+                <p>The EVALUATE button will run the script, or alternatively press CTRL + ENTER when the cursor is
+                    active in the editor.</p>
+                <p>The CLEAR button will clear the editor, as well as any output in the output card
+                    below.</p>
             </md-card-content>
             <md-card-actions>
-                <md-button :disabled="isEvaluating" @click="submitEvaluate">Evaluate</md-button>
+                <md-button :disabled="isEvaluating" id="ebutton" @click="submitEvaluate">Evalute</md-button>
                 <md-button :disabled="isEvaluating" @click="submitClear">Clear</md-button>
             </md-card-actions>
         </md-card>
@@ -162,7 +166,7 @@ export default class LogMor extends Vue {
     }
 
     evaluate(text: string) {
-        // TODO maybe some webworker stuff...
+        // TODO maybe include web-workers...
         setTimeout(() => {
             const ret = new Interpreter().interpret(text, executionController as ExecutionController);
             let str: string[] = [];
@@ -277,28 +281,46 @@ const THEME_OPTIONS = [
     {name: 'zenburn', label: 'Zenburn'}
 ];
 
-const JERY_AND_GERGE = `// Fairness in receiving gifts.
+const JERY_AND_GERGE = `/*
+ * This script implements a morality about fairness. Two people, Jery and Gerge, may or may not receive IPADs,
+ * and the morality applies to Gerges mood when those IPADs are received. The morality states that Gerge should:
+ *\t
+ *  1. be happy only if they both get an IPAD.
+ *\t2. be sad if only one of them gets an IPAD and not the other.
+ *
+ * If neither of them receives an IPAD the morality does not apply, meaning that case (or those cases, rather)
+ * are flagged as neutral.
+ */
 
-// 1. Gerge and Jery may or may not receive IPADS
+/* Hypothetical declarations */
+
+// 1. Gerge and Jery may or may not receive IPADS.
 hyp GergeIPAD "Gerge get IPAD" "Gerge don't get IPAD"
 hyp JeryIPAD \t"Jery get IPAD"  "Jery don't get IPAD"
 
 // 2. Gerges reaction to him and Jery receiving, or not receiving, IPADs.
 hyp GergeMood "Gerge becomes happy" "Gerge becomes sad"
 
+/* Rule declarations */
+
 // If both gets an IPAD, Gerge should be happy.
 rule BothGetRule = GergeIPAD.pos and JeryIPAD.pos and GergeMood.pos is good
 
 // If one of them gets an IPAD but not the other, Gerge should be sad.
-rule MoodRuleOnlyOne = (GergeIPAD.pos xor JeryIPAD.pos) and GergeMood.neg is good
+rule MoodRuleOnlyOne = (GergeIPAD.pos xor JeryIPAD.pos) and not GergeMood is good
 
 // The two rules above combined into one.
 rule MoodRule = BothGetRule or MoodRuleOnlyOne
 
-// If neither of the two gets an IPAD we will be indifferent - regardless of Gerge's mood.
-rule IPADIndifferenceRule = GergeIPAD.neg and JeryIPAD.neg and GergeMood.either
+// If neither of the two gets an IPAD we will be indifferent, regardless of
+// what Gerge's mood is.
+rule IPADIndifferenceRule = (GergeIPAD.neg and JeryIPAD.neg).neg and GergeMood.either
+
+/* Solver declaration */
 
 solver GergeSolver "My Gerge solver"
+
+/* Solver operations */
 
 // Apply the fairness rule.
 solver GergeSolver apply MoodRule

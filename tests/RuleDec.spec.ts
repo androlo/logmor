@@ -11,15 +11,6 @@ import {
     testXORFormula
 } from "./utils";
 import Interpreter from "../src/Interpreter";
-import Logic, {
-    ANDFormula,
-    EquivFormula,
-    Formula,
-    ImpliesFormula,
-    ORFormula,
-    XORFormula
-} from "logic-solver";
-import exp from "constants";
 
 describe('LogMor', () => {
 

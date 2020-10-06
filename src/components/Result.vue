@@ -8,11 +8,10 @@
         </md-card-header>
         <md-card-content>
             <div class="md-body-2">Morally Good States</div>
-            <md-list>
-                <md-list-item
-                    style="border-width: 1px; border-color: lightgrey; border-style: solid; overflow-x: scroll;"
+            <md-list style="">
+                <md-list-item class="statelist"
                     v-for="(goodState, idx) in result.goodStates" v-bind:key="idx">
-                    <div style="display: block;">
+                    <div class="chiplist">
                         <md-chip class="md-primary greenchip"
                                  v-for="(state, idxInner) in goodState" :key="idxInner">
                             {{ state }}
@@ -23,10 +22,9 @@
             <div class="md-body-2">Morally Bad States</div>
             <md-list>
                 <md-list-item
-                    style="border-width: 1px; border-color: lightgrey; border-style: solid; overflow-x: scroll;"
+                    class="statelist"
                     v-for="(badState, idx) in result.badStates" v-bind:key="idx">
-
-                    <div style="display: block;">
+                    <div class="chiplist">
                         <md-chip class="md-primary redchip"
                                  v-for="(state, idxInner) in badState" :key="idxInner">
                             {{ state }}
@@ -37,9 +35,9 @@
             <div class="md-body-2">Morally Neutral States</div>
             <md-list>
                 <md-list-item
-                    style="border-width: 1px; border-color: lightgrey; border-style: solid; overflow-x: scroll;"
+                    class="statelist"
                     v-for="(neutralState, idx) in result.neutralStates" v-bind:key="idx">
-                    <div style="display: block;">
+                    <div class="chiplist">
                         <md-chip class="md-primary bluechip" v-for="(state, idxInner) in neutralState"
                                  :key="idxInner">
                             {{ state }}
@@ -59,7 +57,8 @@
                 </md-card-header>
                 <md-card-content>
                     <p>
-                        The total number of states is the number of possible combinations of hypotheticals. It is also the
+                        The total number of states is the number of possible combinations of hypotheticals. It is also
+                        the
                         sum of the amount of good, bad, and neutral states.
                     </p>
                 </md-card-content>
@@ -68,7 +67,7 @@
             <md-card class="datacard">
                 <md-card-header>
                     <md-card-header-text>
-                        <div class="md-title">{{ Math.round(100*(result.aLevel[0] / result.aLevel[1])) + '%' }}
+                        <div class="md-title">{{ Math.round(100 * (result.aLevel[0] / result.aLevel[1])) + '%' }}
                         </div>
                         <div class="md-subhead">Level of amorality
                         </div>
@@ -85,7 +84,9 @@
             <md-card class="datacard">
                 <md-card-header>
                     <md-card-header-text>
-                        <div class="md-title">{{ result.mBalance === undefined ? '-' : Math.round(100*(result.mBalance[0] / result.mBalance[1])) + '%' }}
+                        <div class="md-title">{{
+                                result.mBalance === undefined ? '-' : Math.round(100 * (result.mBalance[0] / result.mBalance[1])) + '%'
+                            }}
                         </div>
                         <div class="md-subhead">Permissiveness
                         </div>
@@ -144,14 +145,12 @@
                 </md-card-header>
                 <md-card-content>
                     <p>
-                        Moral entropy is a measure of bias that takes the total number of choices
-                        and the balance between good and bad choices into account. A lower value means a higher bias.
-                        For any number of states, the highest entropy is for an even split between good and bad, and the
-                        lowest is with only 1 good (or bad) choice because the extremes (0 and all choices) are treated
-                        as special
-                        cases. The entropy also gets a larger spread the more possible states there are, e.g. 1 good
-                        choice out of 5
-                        states has a higher entropy (less bias) than 1 good out of 10.
+                        Moral entropy is a measure of the bias in the set of good and bad states, that also takes the
+                        total number of good and bad choices into account. A 50/50 split between good and bad choices
+                        will give the highest possible entropy, while a single good choice (or a single bad choice)
+                        gives the lowest possible entropy (0 good or bad states are considered special cases). Entropy
+                        also gets a larger spread the more possible states there are, meaning 1 good choice out of 5
+                        total states has a higher entropy (less bias) than 1 good state out of 10.
                     </p>
                 </md-card-content>
             </md-card>

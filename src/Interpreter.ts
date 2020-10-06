@@ -49,15 +49,15 @@ export type ResultDataSolver = {
     numHyps: number;
     numCases: number;
     goodStates: string[][];
-    neutralStates: string[][];
     badStates: string[][];
-    formulaRes: any;
-    formulaCon: any;
+    neutralStates: string[][];
     aLevel: [number, number];
     mBalance: [number, number] | undefined;
     mEntropy: number | undefined;
     mEntropyNorm: number | undefined;
     mEntropyScale: [number, number] | undefined;
+    formulaRes: string;
+    formulaCon: string;
 };
 
 // Result from running a comparison.
@@ -70,6 +70,9 @@ export type ResultDataComp = {
     goodStates: string[][];
     badStates: string[][];
     neutralStates: string[][];
+    similarity: number;
+    formulaRes: string;
+    formulaCon: string;
 };
 
 // Dummy token for errors.
@@ -122,7 +125,7 @@ export default class Interpreter extends BaseCstVisitor {
     }
 
     parenthesizedExpression(ctx: any): RuleVariable {
-        return this.visit(ctx.logicalImplExpression[0]) as RuleVariable;
+        return this.visit(ctx.logicalEQExpression[0]) as RuleVariable;
     }
 
     primaryExpression(ctx: any): RuleVariable {
@@ -134,7 +137,7 @@ export default class Interpreter extends BaseCstVisitor {
             if (vari === undefined) {
                 throw InterpreterJSError.createVarDoesNotExist(id, token);
             } else {
-                // Must be 'rule' or 'hyp'
+                // Must be 'rule' or 'hyp'.
                 if (vari.type !== 'rule' && vari.type !== 'hyp') {
                     throw InterpreterJSError.create(`Variable ${vari.id} is not a rule or a hypothetical.`, 'TypeError', token);
                 }
@@ -166,9 +169,22 @@ export default class Interpreter extends BaseCstVisitor {
         }
     }
 
+    logicalNOTExpression(ctx: any): RuleVariable {
+        // Get the first variable.
+        if (ctx.Not === undefined) {
+            return this.visit(ctx.primaryExpression[0]) as RuleVariable;
+        } else {
+            // const token = this._getToken(ctx.And[0]);
+            // for keeping all operands (Logic objects and variable names).
+            const vari = this.visit(ctx.logicalEQExpression[0]) as RuleVariable;
+            // Take all data and pass it to a Logic object.
+            return createRuleVar('', Logic.not(vari.data));
+        }
+    }
+
     logicalANDExpression(ctx: any): RuleVariable {
         // Get the first variable.
-        const vari = this.visit(ctx.primaryExpression[0]) as RuleVariable;
+        const vari = this.visit(ctx.logicalNOTExpression[0]) as RuleVariable;
         // If there is at least one 'and', we gather all variables and 'and's and evaluate.
         if (ctx.And !== undefined) {
             // const token = this._getToken(ctx.And[0]);
@@ -177,7 +193,7 @@ export default class Interpreter extends BaseCstVisitor {
             data.push(ruleFromVar(vari));
             for (let i = 0; i < ctx.And.length; i++) {
                 // Get all variables and push the rule to the array.
-                const vari2 = this.visit(ctx.primaryExpression[i + 1]) as RuleVariable;
+                const vari2 = this.visit(ctx.logicalNOTExpression[i + 1]) as RuleVariable;
                 data.push(ruleFromVar(vari2));
             }
             // Take all data and pass it to a Logic object.
@@ -221,27 +237,27 @@ export default class Interpreter extends BaseCstVisitor {
         }
     }
 
-    logicalEQExpression(ctx: any): RuleVariable {
-        // See docs for 'and'
+    logicalImplExpression(ctx: any): RuleVariable {
+        // See docs for 'and', except we do these as nested "(((A -> B) -> C) -> ... ) ".
         let vari = this.visit(ctx.logicalORExpression[0]) as RuleVariable;
-        if (ctx.Eq !== undefined) {
-            // const token = this._getToken(ctx.Eq[0]);
-            for (let i = 0; i < ctx.Eq.length; i++) {
+        if (ctx.Impl !== undefined) {
+            // const token = this._getToken(ctx.Impl[0]);
+            for (let i = 0; i < ctx.Impl.length; i++) {
                 const vari2 = this.visit(ctx.logicalORExpression[i + 1]) as RuleVariable;
-                vari = createRuleVar('', Logic.equiv(vari.data, vari2.data));
+                vari = createRuleVar('', Logic.implies(vari.data, vari2.data));
             }
         }
         return vari;
     }
 
-    logicalImplExpression(ctx: any): RuleVariable {
-        // See docs for 'and', except we do these as nested "(((A -> B) -> C) -> ... ) ".
-        let vari = this.visit(ctx.logicalEQExpression[0]) as RuleVariable;
-        if (ctx.Impl !== undefined) {
-            // const token = this._getToken(ctx.Impl[0]);
-            for (let i = 0; i < ctx.Impl.length; i++) {
-                const vari2 = this.visit(ctx.logicalEQExpression[i + 1]) as RuleVariable;
-                vari = createRuleVar('', Logic.implies(vari.data, vari2.data));
+    logicalEQExpression(ctx: any): RuleVariable {
+        // See docs for 'and'
+        let vari = this.visit(ctx.logicalImplExpression[0]) as RuleVariable;
+        if (ctx.Eq !== undefined) {
+            // const token = this._getToken(ctx.Eq[0]);
+            for (let i = 0; i < ctx.Eq.length; i++) {
+                const vari2 = this.visit(ctx.logicalImplExpression[i + 1]) as RuleVariable;
+                vari = createRuleVar('', Logic.equiv(vari.data, vari2.data));
             }
         }
         return vari;
@@ -275,7 +291,7 @@ export default class Interpreter extends BaseCstVisitor {
         const id = idToken.image;
         this._checkVarName(id, idToken);
         // Get the logical expression (everything after the '=' sign until optional 'is good/bad')
-        let vari = this.visit(ctx.logicalImplExpression[0]) as RuleVariable;
+        let vari = this.visit(ctx.logicalEQExpression[0]) as RuleVariable;
         // If there is an 'is good' or 'is bad'.
         if (ctx.MoralLit !== undefined) {
             const mlToken = this._getToken(ctx.MoralLit[0]);
@@ -404,6 +420,27 @@ export default class Interpreter extends BaseCstVisitor {
             const badStates = getArrsByComp(results.badStates, results2.badStates, arrsAreEqual);
             const neutralStates = getArrsByComp(results.neutralStates, results2.neutralStates, arrsAreEqual);
 
+            const numGoodBadStates = goodStates.length + badStates.length;
+
+            const numStates = Math.pow(2, this._hyps.length);
+
+            const similarity = (goodStates.length + badStates.length + neutralStates.length) / numStates;
+
+            const formulaRes = sVari.solverResult.results.formulaRes + ' and ' + sVari2.solverResult.results.formulaRes;
+
+            const fc1 = sVari.solverResult.results.formulaCon;
+            const fc2 = sVari2.solverResult.results.formulaCon;
+            let formulaCon = '';
+
+            if (fc1 === '()') {
+                formulaCon = fc2;
+            } else if (fc2 === '()') {
+                formulaCon = fc1;
+            } else {
+                formulaCon = fc1 + ' and ' + fc2;
+            }
+
+
             // push the data to the comparison list.
             this._compResults.push({
                 subtype,
@@ -413,7 +450,10 @@ export default class Interpreter extends BaseCstVisitor {
                 solverMeta2,
                 goodStates,
                 badStates,
-                neutralStates
+                neutralStates,
+                similarity,
+                formulaRes,
+                formulaCon
             });
         } else {
             throw InterpreterJSError.create(`The only supported comparison type is similarity ('sim').`, 'UnsupportedError', idToken);

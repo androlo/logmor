@@ -15,25 +15,38 @@ html, body {
 
 #toolbar {
     height: 350px;
-    background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.5)), url("./assets/school_of_athens.png") no-repeat center center fixed;
+    background: url("./assets/school_of_athens.png") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
 }
 
+.statelist {
+    width: 100%;
+    border-width: 1px;
+    border-color: lightgrey;
+    border-style: solid;
+    white-space: nowrap;
+}
+
+.chiplist {
+    display: block;
+    overflow-x: auto;
+}
+
 .greenchip {
-    margin: 5px;
+    margin-top: 1px;
     background-color: #1f7244 !important;
 }
 
 .redchip {
-    margin: 5px;
+    margin-top: 1px;
     background-color: #772820 !important;
 }
 
 .bluechip {
-    margin: 5px;
+    margin-top: 1px;
     background-color: #213b62 !important;
 }
 

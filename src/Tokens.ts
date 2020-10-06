@@ -11,18 +11,19 @@ function createChevToken (options: ITokenConfig) {
 createChevToken({
     name: 'WhiteSpace',
     pattern: /\s+/,
-    group: Lexer.SKIPPED
+    group: Lexer.SKIPPED,
+    line_breaks: true
 });
 
 createChevToken({
     name: 'Comment',
-    pattern: /\/\/[^\n\r]*/,
+    pattern: /\/\/[^\n]*/,
     group: Lexer.SKIPPED
 });
 
 createChevToken({
     name: 'MultiLineComment',
-    pattern: /\/\*.?\*\//,
+    pattern: /\/\*[\s\S]*?\*\//,
     group: Lexer.SKIPPED,
     line_breaks: true
 });
@@ -64,6 +65,7 @@ export const TGood = createChevToken({ name: 'Good', pattern: /good/, categories
 export const TBad = createChevToken({ name: 'Bad', pattern: /bad/, categories: [TKeyword, TMoralLit] });
 
 // Logical operators
+export const TNot = createChevToken({ name: 'Not', pattern: /not/, categories: [TKeyword, TLogicalOP] });
 export const TOr = createChevToken({ name: 'Or', pattern: /or/, categories: [TKeyword, TLogicalOP] });
 export const TXor = createChevToken({ name: 'XOr', pattern: /xor/, categories: [TKeyword, TLogicalOP] });
 export const TAnd = createChevToken({ name: 'And', pattern: /and/, categories: [TKeyword, TLogicalOP] });
@@ -79,44 +81,7 @@ export const TDot = createChevToken({ name: 'Dot', pattern: /\./ });
 
 // ID
 export const TID = createChevToken({ name: 'ID', pattern: /[A-Za-z_]+\w*/ });
-
-// Quoted strings
-export const TQUOTED_STRING = createChevToken({
-    name: 'QUOTED_STRING',
-    // @ts-ignore
-    pattern: matchQuotedString,
-    line_breaks: true,
-    start_chars_hint: [`'`, '"', '`']
-});
-
-function matchQuotedString (text: string, startOffset: number) {
-    let endOffset = startOffset;
-    const char = text[endOffset++];
-
-    if (char !== '"' && char !== `'` && char !== '`') {
-        return null;
-    }
-
-    if (char === '`') {
-        while (endOffset < text.length && text[endOffset] !== char) {
-            endOffset++;
-        }
-    } else {
-        while (endOffset < text.length && text[endOffset] !== char) {
-            if (text[endOffset] === '\n' || text[endOffset] === '\r') {
-                return null;
-            }
-            endOffset++;
-        }
-    }
-
-    if (endOffset === text.length) {
-        return null;
-    } else {
-        const matchedString = text.substring(startOffset, endOffset + 1);
-        return [matchedString];
-    }
-}
+export const TQUOTED_STRING = createChevToken({ name: 'QUOTED_STRING', pattern: /"([^\n\r"])*"/ });
 
 export const allKeywords: string[] = [];
 
