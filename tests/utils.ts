@@ -1,6 +1,5 @@
 import Interpreter, {ExecutionController} from "../src/Interpreter";
 import Logic, {ANDFormula, EquivFormula, Formula, ImpliesFormula, ORFormula, XORFormula} from "logic-solver";
-import exp from "constants";
 
 export const testInterpret = (int: Interpreter, script: string) => {
     return int.interpret(script, new ExecutionController());
@@ -41,16 +40,16 @@ export const testEquivFormula = (data: any): EquivFormula => {
     return frm as EquivFormula;
 };
 
-export const compArrs = (arr1: string[][], arr2: string[][]): void => {
+export const compArrs = (arr1: [string, boolean][][], arr2: [string, boolean][][]): void => {
     expect(arr1.length).toBe(arr2.length);
     for (let i = 0; i < arr1.length; i++) {
         compArr(arr1[i], arr2[i]);
     }
 }
 
-export const compArr = (a1: string[], a2: string[]): void => {
+export const compArr = (a1: [string, boolean][], a2: [string, boolean][]): void => {
     expect(a1.length).toBe(a2.length);
     for (let i = 0; i < a1.length; i++) {
-        expect(a1[i]).toBe(a2[i]);
+        expect(a1[i][0]).toBe(a2[i][0]);
     }
 };

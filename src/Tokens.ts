@@ -48,6 +48,9 @@ export const TFalse = createChevToken({ name: 'False', pattern: /false/, categor
 export const TNeg = createChevToken({ name: 'Neg', pattern: /neg/, categories: [TBoolLit] });
 export const TEither = createChevToken({ name: 'Either', pattern: /either/, categories: [TBoolLit] });
 
+// Hyp modifiers
+export const TPrimary = createChevToken({ name: 'Primary', pattern: /primary/, categories: [TKeyword] });
+
 // Solver ops
 export const TApply = createChevToken({ name: 'Apply', pattern: /apply/, categories: [TKeyword, TSolverRuleOP] });
 export const TOmit = createChevToken({ name: 'Omit', pattern: /omit/, categories: [TKeyword, TSolverRuleOP] });
@@ -80,7 +83,7 @@ export const TRCurly = createChevToken({ name: 'RCurly', pattern: /}/ });
 export const TDot = createChevToken({ name: 'Dot', pattern: /\./ });
 
 // ID
-export const TID = createChevToken({ name: 'ID', pattern: /[A-Za-z_]+\w*/ });
+export const TID = createChevToken({ name: 'ID', pattern: /\w+/ });
 export const TQUOTED_STRING = createChevToken({ name: 'QUOTED_STRING', pattern: /"([^\n\r"])*"/ });
 
 export const allKeywords: string[] = [];

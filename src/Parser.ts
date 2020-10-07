@@ -10,7 +10,7 @@ import {
     TAnd, TDef, TEq, TID, TImpl, TLParen,
     TOr, TQUOTED_STRING, TRParen, TRule, TRun,
     TSolver, TXor, TSim, TCompare, TDot, TBoolLit,
-    TIs, TMoralLit, THyp, TSolverRuleOP, TPrint, TNot
+    TIs, TMoralLit, THyp, TSolverRuleOP, TPrint, TNot, TPrimary
 } from './Tokens';
 import {LMParserErrorProvider} from "./Errors";
 
@@ -144,6 +144,12 @@ export class Parser extends CstParser {
             {
                 ALT: () => {
                     this.CONSUME(TPrint);
+                }
+            },
+            {
+                ALT: () => {
+                    this.CONSUME(TPrimary);
+                    this.CONSUME3(TID);
                 }
             }
         ]);

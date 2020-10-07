@@ -167,7 +167,7 @@ export const LMParserErrorProvider = {
                 return `Error in rule declaration on line '${options.previous.startLine}'. Rule declarations must be on the form 'rule <name> = <logic>' where logic is a formula.`;
             case 'ID':
                 if (options.ruleName === 'solverStatement') {
-                    return `Error in solver declaration on line '${options.previous.startLine}'. Solver statements must be on the form 'solver <name>' followed by a quoted string (in declarations) or a solver command (apply/omit/run/print). Additionally, solver declarations must come before solver statements.`;
+                    return `Error in solver declaration on line '${options.previous.startLine}'. Solver statements must be on the form 'solver <name>' followed by a quoted string (in declarations) or a solver operation. Additionally, solver declarations must come before solver statements.`;
                 }
                 break;
             case 'Compare':

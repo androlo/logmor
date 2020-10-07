@@ -10,11 +10,11 @@
             <div class="md-body-2">Morally Good States</div>
             <md-list style="">
                 <md-list-item class="statelist"
-                    v-for="(goodState, idx) in result.goodStates" v-bind:key="idx">
+                              v-for="(goodState, idx) in result.goodStates" v-bind:key="idx">
                     <div class="chiplist">
                         <md-chip class="md-primary greenchip"
                                  v-for="(state, idxInner) in goodState" :key="idxInner">
-                            {{ state }}
+                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
                         </md-chip>
                     </div>
                 </md-list-item>
@@ -27,7 +27,7 @@
                     <div class="chiplist">
                         <md-chip class="md-primary redchip"
                                  v-for="(state, idxInner) in badState" :key="idxInner">
-                            {{ state }}
+                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
                         </md-chip>
                     </div>
                 </md-list-item>
@@ -40,7 +40,7 @@
                     <div class="chiplist">
                         <md-chip class="md-primary bluechip" v-for="(state, idxInner) in neutralState"
                                  :key="idxInner">
-                            {{ state }}
+                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
                         </md-chip>
                     </div>
                 </md-list-item>
@@ -58,8 +58,7 @@
                 <md-card-content>
                     <p>
                         The total number of states is the number of possible combinations of hypotheticals. It is also
-                        the
-                        sum of the amount of good, bad, and neutral states.
+                        the sum of the amount of good, bad, and neutral states.
                     </p>
                 </md-card-content>
             </md-card>
@@ -114,18 +113,10 @@
                 </md-card-header>
                 <md-card-content>
                     <p>
-                        Moral sophistication is a measure of how selective a rule is about what's good and bad. It can
-                        be
-                        seen
-                        as
-                        a measure of the imbalance between the number of good and bad cases, that also takes the
-                        proportion
-                        of choices that are non-neutral into account. An even 50/50 split between
-                        good and bad means 0 sophistication, whereas more uneven splits leads to higher values (0/all
-                        splits
-                        are
-                        regarded as a special cases). Generally, a higher number of neutral cases will lead to a lower
-                        sophistication as well.
+                        Moral sophistication is a measure of how selective a rule is about what's good and bad. An even
+                        50/50 split between good and bad means 0 sophistication, and more uneven splits leads to higher
+                        values (although 0-to-all splits are regarded as special cases). A higher number of neutral
+                        cases will lead to a lower sophistication as well.
                     </p>
                     <p>
                         Mathematically, the moral sophistication value 'S' is computed as 'S = (1 - E)*P' where 'E'

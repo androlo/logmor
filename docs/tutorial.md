@@ -2,6 +2,8 @@
 
 This tutorial explains the basics of how LogMor works, and how to create a simple program. To understand how propositions and hypotheticals works, and how they can be put on a format suitable for a program like LogMor, you could read an article on basic logic such as: https://brewminate.com/an-introduction-to-basic-logic/.
 
+Several examples of LogMor script can also be found here: https://github.com/androlo/logmor/tree/main/script. You can click on a file to open it, then copy the script into the [LogMor app](https://androlo.github.io/) to get syntax highlighting and to run it.
+
 - [What this program is](#what-this-program-is)
   * [Logical rules and SAT-solvers](#logical-rules-and-sat-solvers)
     + [1 - Boolean variables](#1---boolean-variables)

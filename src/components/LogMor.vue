@@ -1,6 +1,6 @@
 <template>
     <div>
-        <md-card style="background-color: #ececec; margin-bottom: 0.5em;">
+        <md-card style="background-color: #f8f8f8; margin-bottom: 0.5em;">
             <md-card-content>
                 <div class="md-display-3 mainTitle" style="margin-bottom: 0.3em;text-align: center; color: #474747">
                     Logical Morality
@@ -17,17 +17,16 @@
                 <div>
                     <textarea id="ide"></textarea>
                 </div>
-                <p>The EVALUATE button will run the script, or alternatively press CTRL + ENTER when the cursor is
-                    active in the editor.</p>
-                <p>The CLEAR button will clear the editor, as well as any output in the output card
-                    below.</p>
+                <p>Run the script by clicking the EVALUATE button or by pressing CTRL + ENTER (when the cursor is
+                    active in the editor).</p>
+                <p>The CLEAR button clears the editor along with any printed output.</p>
             </md-card-content>
             <md-card-actions>
                 <md-button :disabled="isEvaluating" id="ebutton" @click="submitEvaluate">Evalute</md-button>
                 <md-button :disabled="isEvaluating" @click="submitClear">Clear</md-button>
             </md-card-actions>
         </md-card>
-        <md-card style="background-color: #ececec;">
+        <md-card style="background-color: #f8f8f8;">
             <md-card-header>
                 <div class="md-display-1">Output</div>
             </md-card-header>

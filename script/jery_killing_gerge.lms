@@ -1,0 +1,77 @@
+// Comparing self defense philosophies. This example shows how to compare moralities,
+// and it also shows how two moralities can be judgements on different things even
+// though they are both both based on the same hypotheticals (that are presumably also
+// interpreted in the exact same way).
+
+hyp AttackingHyp "Gerge attacked Jery." "Gerge did not attack Jery."
+hyp KillingHyp "Jery killed Gerge." "Jery did not kill Gerge."
+
+/*
+ * Here we assume that 'DefenseHyp' happens before 'KillingHyp', meaning Jery will
+ * (or will not) have killed Gerge as a response to Gerge attacking him (or not).
+ *
+ * true + true: Jery killed Gerge in self defense, because Gerge attacked him.
+ * true + false: Jery killed Gerge unprovoced.
+ * false + true: Jery did not kill Gerge, even though Gerge attacked him.
+ * false + false: Jery did not kill Gerge, and Gerge did not attack Jery.
+ *
+ */
+
+/* A judgement of Jery - self defense */
+
+// This rule states that if Jery killed Gerge in self defense, then that is good (true, true).
+rule SelfDefenseRule = AttackingHyp.true and KillingHyp.true is good
+// This rule states that if neither person did anything to anyone, then that's good too (false, false).
+rule PacifismRule = AttackingHyp.false and KillingHyp.false is good
+
+// This is the combination of the two rules above, which states that either of those two cases
+// are good, but also that the other two cases, (true, false) and (false, true), are implicitly bad.
+// Thus, it is bad if Gerge attacked Jery and Jery did not kill him in response (true, false),
+// or if Jery killed Gerge even though Gerge did nothing to him (false, true). Thus, this is
+// essentially a judgement on Jery's act of killing (or not killing) Gerge.
+rule JerySelfDefenseRule = SelfDefenseRule or PacifismRule
+
+// Here we define a rule which we will omit, thus stating that we are indifferent to the
+// case where Gerge attacked Jery but Jery did not kill him (true, false). This will
+// remove the moral requirement for a person to kill their attackers.
+rule SelfDefenseIndifferenceRule = AttackingHyp.true and KillingHyp.false
+
+/* A judgement of Gerge - aggression */
+
+// This rule states that Gerge was wrong in attacking Jery, regardless of whether Jery
+// killed him or not in response. It is an "anti attacking people" morality.
+rule DoNotAttackRule = AttackingHyp.true and KillingHyp.either is bad
+
+/* Solvers */
+
+// Declare a solver for the Jery self defense morality.
+solver JerySelfDefenseSolver "Jery self defense."
+// Declare a solver for the Gerge attack morality.
+solver GergeAttackSolver "Gerge attack."
+
+// Apply the self defense rule.
+solver JerySelfDefenseSolver apply JerySelfDefenseRule
+// Omit the case that we are indifferent to.
+solver JerySelfDefenseSolver omit SelfDefenseIndifferenceRule
+
+// Apply the attack rule to the Gerge solver (note that we have no indifference rule in that morality).
+solver GergeAttackSolver apply DoNotAttackRule
+
+// Mark the primary hypothetical for each solver
+solver JerySelfDefenseSolver primary KillingHyp
+solver GergeAttackSolver primary AttackingHyp
+
+// Run the solvers.
+solver JerySelfDefenseSolver run
+solver GergeAttackSolver run
+
+// Print the results
+solver JerySelfDefenseSolver print
+solver GergeAttackSolver print
+
+// Now compare the two solvers to see what good, neutral, and bad states they have in common.
+compare sim JerySelfDefenseSolver GergeAttackSolver
+
+// You will see that the only state the two moralities have in common is (false, false),
+// which is considered good in both cases, meaning both moralities thinks that not attacking
+// and not killing is right.

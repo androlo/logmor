@@ -15,7 +15,7 @@
                     <div class="chiplist">
                         <md-chip class="md-primary greenchip"
                                  v-for="(state, idxInner) in goodState" :key="idxInner">
-                            {{ state }}
+                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
                         </md-chip>
                     </div>
                 </md-list-item>
@@ -28,7 +28,7 @@
                     <div class="chiplist">
                         <md-chip class="md-primary redchip"
                                  v-for="(state, idxInner) in badState" :key="idxInner">
-                            {{ state }}
+                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
                         </md-chip>
                     </div>
                 </md-list-item>
@@ -41,7 +41,7 @@
                     <div class="chiplist">
                         <md-chip class="md-primary bluechip" v-for="(state, idxInner) in neutralState"
                                  :key="idxInner">
-                            {{ state }}
+                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
                         </md-chip>
                     </div>
                 </md-list-item>
@@ -60,19 +60,6 @@
                     <p>
                         The similiarity is the number of states that the two solvers has in common, divided by the number of total states. If the two solver has no states in common, the similarity would be 0%, and if a solver was compared to itself, the similiarity would be 100%.
                     </p>
-                </md-card-content>
-            </md-card>
-            <md-card class="datacard">
-                <md-card-header>
-                    <md-card-header-text>
-                        <div class="md-title">Formulas</div>
-                    </md-card-header-text>
-                </md-card-header>
-                <md-card-content>
-                    <h3>Formula for Good/Bad</h3>
-                    <div style="overflow-x: auto">{{ result.formulaRes }}</div>
-                    <h3>Formula for Neutral</h3>
-                    <div style="overflow-x: auto">{{ result.formulaCon }}</div>
                 </md-card-content>
             </md-card>
         </div>

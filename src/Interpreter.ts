@@ -48,9 +48,9 @@ export type ResultDataSolver = {
     hyps: [string, string, string][];
     numHyps: number;
     numCases: number;
-    goodStates: string[][];
-    badStates: string[][];
-    neutralStates: string[][];
+    goodStates: [string, boolean][][];
+    badStates: [string, boolean][][];
+    neutralStates: [string, boolean][][];
     aLevel: [number, number];
     mBalance: [number, number] | undefined;
     mEntropy: number | undefined;
@@ -67,9 +67,9 @@ export type ResultDataComp = {
     solverMeta1: string;
     solverID2: string;
     solverMeta2: string;
-    goodStates: string[][];
-    badStates: string[][];
-    neutralStates: string[][];
+    goodStates: [string, boolean][][];
+    badStates: [string, boolean][][];
+    neutralStates: [string, boolean][][];
     similarity: number;
     formulaRes: string;
     formulaCon: string;
@@ -90,12 +90,6 @@ export const dummyToken = {
         name: 'dummy'
     }
 };
-
-const SC_NAMES = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-    'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-    'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd'
-];
 
 // For aborting the execution of a solver.
 export class ExecutionController {
@@ -281,8 +275,9 @@ export default class Interpreter extends BaseCstVisitor {
         }
         // Check that the variable id is available.
         this._checkVarName(varId, varIdToken);
+        const vari = createHypVar(varId, [meta.slice(1, -1), meta2.slice(1, -1)]);
         // Add to variable table.
-        this.addVariable(varId, createHypVar(varId, [meta.slice(1, -1), meta2.slice(1, -1)]));
+        this.addVariable(varId, vari);
     }
 
     ruleDeclaration(ctx: any): void {
@@ -353,6 +348,19 @@ export default class Interpreter extends BaseCstVisitor {
             } else {
                 sVari.pruned.push(rVari.data);
             }
+        } else if (ctx.Primary !== undefined) {
+            // Get var and check that it is a rule.
+            const ruleOP = this._getToken(ctx.Primary[0]).image;
+            const idToken2 = this._getToken(ctx.ID[1]);
+            const id2 = idToken2.image;
+            const hVari = this.getVariable(id2);
+            if (hVari === undefined) {
+                throw InterpreterJSError.createVarDoesNotExist(id2, idToken2);
+            }
+            if (hVari.type !== 'hyp') {
+                throw InterpreterJSError.create(`Variable ${hVari.id} is not a hypothetical.`, 'TypeError', idToken2);
+            }
+            sVari.primaryHyp = hVari.id;
         } else if (ctx.Run !== undefined) {
             // Run.
             this._runSolver(sVari, idToken);
@@ -532,7 +540,7 @@ export default class Interpreter extends BaseCstVisitor {
         if (vari.solverResult !== undefined) {
             throw InterpreterJSError.create(`Solver '${vari.id}' has already been run.`, 'OperatorError', token);
         }
-        console.log(vari.rules.length);
+
         // Check that at least one rule has been applied.
         if (vari.rules.length === 0) {
             throw InterpreterJSError.create(`Solver '${vari.id}' has no applied rules.`, 'OperatorError', token);
@@ -693,9 +701,9 @@ export default class Interpreter extends BaseCstVisitor {
         // with their meta text (for true or false), which is how they will be presented.
         // We will also use the good and neutral solutions to find what the bad solutions
         // are.
-        const goodStates: string[][] = [];
-        const neutralStates: string[][] = [];
-        const badStates: string[][] = [];
+        const goodStates: [string, boolean][][] = [];
+        const neutralStates: [string, boolean][][] = [];
+        const badStates: [string, boolean][][] = [];
 
         // Used to track which of the possible states are good or neutral, so we can find
         // out which states are left (which would be the bad ones).
@@ -705,17 +713,18 @@ export default class Interpreter extends BaseCstVisitor {
 
         // Create the good states from the hyp metas.
         for (let i = 0; i < goodSolutions.length; i++) {
-            const res: string[] = new Array(numHyps);
+            const res: [string, boolean][] = new Array(numHyps);
             const gs = goodSolutions[i];
             let bits = 0;
             for (let j = 0; j < hyps.length; j++) {
                 const hypVar = hyps[j];
+                const isPrimary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
                 if (gs.has(hypVar.id)) {
-                    res[j] = hypVar.meta[0];
+                    res[j] = [hypVar.meta[0], isPrimary];
                     // Also add this state to the bitset as occupied.
                     bits |= po2[j];
                 } else {
-                    res[j] = hypVar.meta[1];
+                    res[j] = [hypVar.meta[1], isPrimary];
                 }
             }
             bitSet.add(bits);
@@ -724,16 +733,17 @@ export default class Interpreter extends BaseCstVisitor {
 
         // Create the neutral cases. Same as for good states.
         for (let i = 0; i < neutralSolutions.length; i++) {
-            const res: string[] = new Array(numHyps);
+            const res: [string, boolean][] = new Array(numHyps);
             const cons = neutralSolutions[i];
             let bits = 0;
             for (let j = 0; j < hyps.length; j++) {
                 const hypVar = hyps[j];
+                const isPrimary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
                 if (cons.has(hypVar.id)) {
-                    res[j] = hypVar.meta[0];
+                    res[j] = [hypVar.meta[0], isPrimary];
                     bits |= po2[j];
                 } else {
-                    res[j] = hypVar.meta[1];
+                    res[j] = [hypVar.meta[1], isPrimary];
                 }
             }
             neutralStates.push(res);
@@ -744,13 +754,15 @@ export default class Interpreter extends BaseCstVisitor {
         // the state is taken (i.e. good or neutral), and if not, add it to
         // the list of bad states.
         for (let i = 0; i < numCases; i++) {
-            const res: string[] = [];
+            const res: [string, boolean][] = [];
             if (!bitSet.has(i)) {
                 for (let j = 0; j < numHyps; j++) {
+                    const hypVar = hyps[j];
+                    const isPrimary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
                     if (i & po2[j]) {
-                        res[j] = hyps[j].meta[0];
+                        res[j] = [hypVar.meta[0], isPrimary];
                     } else {
-                        res[j] = hyps[j].meta[1];
+                        res[j] = [hypVar.meta[1], isPrimary];
                     }
                 }
                 badStates.push(res);
@@ -936,20 +948,20 @@ export const setsAreEqual = (s1: Set<string>, s2: Set<string>) => {
     return true;
 };
 
-export const arrsAreEqual = (arr1: string[], arr2: string[]): boolean => {
+export const arrsAreEqual = (arr1: [string, boolean][], arr2: [string, boolean][]): boolean => {
     if (arr1.length !== arr2.length) {
         return false;
     }
     for (let i = 0; i < arr1.length; i++) {
-        if (arr1[i] !== arr2[i]) {
+        if (arr1[i][0] !== arr2[i][0]) {
             return false;
         }
     }
     return true;
 };
 
-export const getArrsByComp = (arr1: string[][], arr2: string[][], comp: (a1: string[], a2: string[]) => boolean): string[][] => {
-    const res: string[][] = [];
+export const getArrsByComp = (arr1: [string, boolean][][], arr2: [string, boolean][][], comp: (a1: [string, boolean][], a2: [string, boolean][]) => boolean): [string, boolean][][] => {
+    const res: [string, boolean][][] = [];
     for (let i = 0; i < arr1.length; i++) {
         const e = arr1[i];
         for (let j = 0; j < arr2.length; j++) {
@@ -980,7 +992,6 @@ export const formulaToString = (formulas: any, logic: string): string => {
             // TODO go over all cases.
             if (op.type === 'not') {
                 str += 'not';
-                console.log(op);
                 str += ` ${formulaToString([op.operand], 'not')} `;
             } else if (op.type === 'implies' || op.type === 'equiv') {
                 str += `${formulaToString([op.A, op.B], op.type)}`;

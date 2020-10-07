@@ -2,6 +2,12 @@
 
 This is the official documentation for the LogMor web application.
 
+- [Basic language features](#basic-language-features)
+  * [Quoted strings](#quoted-strings)
+  * [Comments](#comments)
+    + [Single-line comments](#single-line-comments)
+    + [Multi-line comments](#multi-line-comments)
+  * [The difference between quoted strings and comments](#the-difference-between-quoted-strings-and-comments)
 - [Commands](#commands)
   * [hyp declarations](#hyp-declarations)
   * [rule declarations](#rule-declarations)
@@ -17,68 +23,98 @@ This is the official documentation for the LogMor web application.
   * [Logical operators](#logical-operators)
   * [Dot-expressions](#dot-expressions)
   * [Operator precedence](#operator-precedence)
-      - [examples](#examples-3)
 - [Advice](#advice)
   * [Learn to use AND, and OR/XOR correctly](#learn-to-use-and--and-or-xor-correctly)
-    + [examples](#examples-4)
   * [Include every hypothetical in every rule](#include-every-hypothetical-in-every-rule)
+  * [Use the same basic technique in every system](#use-the-same-basic-technique-in-every-system)
+  * [If all else fails - use one rule per state](#if-all-else-fails---use-one-rule-per-state)
 - [Finding and fixing errors](#finding-and-fixing-errors)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 ## Basic language features
 
 ### Quoted strings
 
-When regular text is required by a command, it is added in the form of a single-line quoted string:
+When regular text is required, such as in a `hyp` declaration, it must be provided in the form of a single-line quoted string:
 
-`"Hello I am a quoted string, and I am considered valid."`.
+`"I am a valid single-line quoted string."`.
 
-Text arguments are required when declaring hypotheticals, for example.
-
-Quoted strings can't span multiple lines, meaning you can't write it like this:
+Quoted strings must not span multiple lines:
 
 ```
-"Hello I am a quoted string, 
-but I am not considered valid."
+"I am a quoted string, 
+but I am not considered valid. I will cause an error."
 ```
-
-If a line break is found in a quoted string the interpreter will throw an error.
 
 ### Comments
 
-Comments are sections of script that are ignored by the interpreter. They are normally used for adding notes about what the script is actually doing. 
+Comments are sections of script that are ignored by the interpreter. You can use them to add notes about what a program is doing.
 
 #### Single-line comments
 
-A single-line comment starts with the sequence `//`, as in the following examples:
+A single-line comment starts with the character sequence `//`. Everything to the right of that sequence is considered part of that comment, including other `//` sequences.
 
 ```
-// I am a comment.
-hyp H "something" "something else"  // I am a comment too.
+// I am a valid single-line comment.
 ```
 
 ```
-// If both gets an IPAD, Gerge should be happy.
-rule BothGetRule = GergeIPAD.pos and JeryIPAD.pos and GergeMood.pos is good
+//I am also a valid single-line comment.
 ```
 
-When we start a comment using `//`, the next line is automatically considered code, meaning we don't need to terminate the comment ourselves.
+```
+//                      I am also a valid single-line comment.
+```
+
+```
+/// // / I !! am %% an && exotic )) but (( valid ½½ çinglé-lînë || cömmen\t. / /\ /\ <> 
+```
+
+```
+// I am not a valid
+single-line comment. I will cause an error.
+```
+
+When we start a comment using `//`, the next line will automatically be considered code again meaning we don't have to terminate the comment ourselves. In the example below, `hyp H "something" "something else"` will be interpreted as script.
+
+```
+// I am a valid single-line comment.
+hyp H "something" "something else" // I am also a valid single-line comment.
+// I am also a valid single-line comment.
+```
 
 #### Multi-line comments
 
-Multi-line comments are started using `/*` and ended using `*/`. They can be used on single lines too, but are generally referred to as multi-line since they can potentially span multiple lines, and that is what distinguishes them from comments beginning with `//`. Examples:
+Multi-line comments are started using `/*` and ended using `*/`. They can be used on single lines too, but are referred to as multi-line because they are allowed to span multiple lines. Examples:
 
 ```
-/* Hello I am a multi-line comment that only uses one line. */
+/* I am a valid multi-line comment, even though I only use one line. */
 
 /*
-    Hello I am a multi-line comment that uses
+    I am a valid multi-line comment that uses
     more
     than
     one 
     line.
 */
+```
+
+```
+/* I am a valid multi-line comment. */ But this text will cause an error.
+```
+
+```
+/* I am a valid
+multi-line 
+comment. */ But this text will cause an error.
+```
+
+```
+/* I am a valid
+multi-line 
+comment. */ // And I am a valid, single-line comment.
 ```
 
 ## Commands
@@ -91,27 +127,25 @@ There are five types of commands in LogMor script:
 - solver operations
 - compare operation
 
-The commands have to be made in that given order, meaning if a hyp declaration is made after a rule declaration you will get an error.
+Commands have to be given in that specific order, meaning if a hyp declaration is made after a rule declaration you will get an error.
 
 ### hyp declarations
 
-##### syntax
+**syntax**
 
 ```
 hyp <name> <pos> <neg>
 ```
 
-- **name**: the name of the hypothetical.
-- **pos**: a quoted string, should express the hypothetical in the positive.
-- **neg**: a variable name, should express the hypothetical in the negative.
+- **name**: a sequence of alphanumeric characters.
+- **pos**: a quoted string. Should express the hypothetical in the positive.
+- **neg**: a quoted string. Should express the hypothetical in the negative.
 
-##### info
+**info**
 
-The `hyp` keyword is used to declare a hypothetical.
+The `hyp` keyword is used for declaring hypotheticals. A hypothetical is a boolean variable, `H`. The values of `pos` and `neg` are metadata that relates to the values `H = true` and `H = false` respectively. The system does not interpret the data stored in the `pos` and `neg`, or use it in any computations.
 
-A hypothetical is a boolean variables, `H`, and the values of `pos` and `neg` are just metadata that relates to the values `H = true` and `H = false`. The system does not interpret the data stored in the `pos` and `neg` in any way, or use it in any computations.
-
-##### examples
+**examples**
 
 ```
 hyp FoodStealingHyp "Person X stole some food." "Person X did not steal any food." 
@@ -123,21 +157,21 @@ hyp SufferingHyp "Person X is suffering." "Person X is not suffering."
 
 ### rule declarations
 
-##### syntax
+**syntax**
 
 ```
 rule <name> = <formula> [moral value]
 ```
 
-- **name**: the name of the rule.
+- **name**: a sequence of alphanumeric characters.
 - **formula**: a logical formula (see the section on [formulas](#formulas)).
 - **moral value** (optional): `is good` or `is bad`. The default value is `is good`.
 
-##### info
+**info**
 
-The `rule` keyword is used to declare a rule.
+The `rule` keyword is used for declaring rules.
 
-When `is good` is used, the logical formula is left unmodified. When `is bad` is used, the formula is inverted, i.e. `F` is changed to `not F`; for example: 
+When `is good` is used, the logical formula is left unmodified. When `is bad` is used, the formula is negated; for example: 
 
 `rule MyRule = A and B is bad`
 
@@ -145,7 +179,7 @@ is equivalent to writing:
 
 `rule MyRule = not (A and B) is good`.
 
-##### examples
+**examples**
 
 Using `is good`:
 
@@ -159,10 +193,10 @@ Using `is bad`:
 ```
 hyp H1 "H1 pos" "H1 neg"
 hyp H2 "H2 pos" "H2 neg"
-rule MyRule = (H1 and H2) is bad
+rule MyRule = H1 and H2 is bad
 ```
 
-Omitting `is X`, which is the same as using `is good`:
+Omitting the phrase `is X`, which is the same as using `is good`:
 
 ```
 hyp H1 "H1 pos" "H1 neg"
@@ -172,20 +206,20 @@ rule MyRule = H1.pos or H2.neg
 
 ### solver declarations
 
-##### syntax
+**syntax**
 
 ```
 solver <name> <meta>
 ```
 
-- **name**: the name of the solver.
+- **name**: a sequence of alphanumeric characters.
 - **meta**: a quoted string, presumably containing some information about the solver.
 
-##### info
+**info**
 
-The `solver` keyword can be used to declare a solver.
+The `solver` keyword is used for declaring solvers.
 
-##### examples
+**examples**
 
 ```
 solver MySolver "my solver"
@@ -197,15 +231,16 @@ The `solver` keyword can be used in combination with other keywords to do things
 
 #### apply
 
-##### syntax
+**syntax**
 
 ```
-solver apply <rule>
+solver <name> apply <rule>
 ```
 
+- **name**: the name of a solver variable.
 - **rule**: the name of a rule variable.
 
-##### info
+**info**
 
 Applies a rule to the solver, which will be used when the solver is run using the `solver run` command.
 
@@ -235,27 +270,43 @@ Technically, the conjunction of all applied rules becomes the formula `F` such t
 
 #### omit
 
-##### syntax
+**syntax**
 
 ```
-solver omit <rule>
+solver <name> omit <rule>
 ```
 
+- **name**: the name of a solver variable.
 - **rule**: the name of a rule variable.
 
-##### info
+**info**
 
 This works the exact same way as `apply` except the rules are combined to find states that are considered invalid solutions. Technically, the omitted rule formula `G` is run to find solutions to `G = true`, and then the `apply`:ed formula `F` is run to find `F = true`. If the state `x` is a solution to `F = true` there are two possibilities: either `x` is a solution to `G = true` as well, in which case it is an invalid solution, or `x` is not a solution to `G = true`, in which case it is a valid solution.
 
+#### primary
+
+**syntax**
+
+```
+solver <name> primary <rule>
+```
+
+- **name**: the name of a solver variable.
+- **rule**: the name of a rule variable.
+
+**info**
+
+Sets a hypothetical as primary, meaning it is the hypothetical that the rules of this solver is ultimately about. This is an optional command, and what it does is to add a flag to the states of the primary hypothetical in the output.
+
 #### run
 
-##### syntax
+**syntax**
 
 ```
 solver run
 ```
 
-##### info
+**info**
 
 Runs the backing SAT-solver with the added and omitted rules and stores the results.
 
@@ -263,13 +314,13 @@ Will throw an error if the solver has no `apply`:ed rules.
 
 #### print
 
-##### syntax
+**syntax**
 
 ```
 solver print
 ```
 
-##### info
+**info**
 
 Prints the results that are created through `solver run`.
 
@@ -281,7 +332,7 @@ The `compare` keyword can be used in combination with other keywords to do thing
 
 #### sim
 
-##### syntax
+**syntax**
 
 ```
 compare sim <solver1> <solver2>
@@ -290,7 +341,7 @@ compare sim <solver1> <solver2>
 - **solver1**: the name of a solver variable.
 - **solver2**: the name of a solver variable.
 
-##### info
+**info**
 
 Prints the good, bad, and neutral states that are common to both solvers along with some relevant statistics.
 
@@ -300,11 +351,11 @@ Formulas are logical formulas on boolean variables that has been declared using 
 
 `rule MyRule = <formula> is good`
 
-If someone does not know how to use formal logic and boolean algebra but has some background in philosophy and/or debating, this seems like a very good resource: https://brewminate.com/an-introduction-to-basic-logic/.
+If someone does not know basic logic, this seems like a good resource: https://brewminate.com/an-introduction-to-basic-logic/.
 
 For anyone with a STEM education, a good introduction can be the video series https://www.youtube.com/watch?v=EPJf4owqwdA&ab_channel=ComputerScience and https://www.youtube.com/watch?v=2zRJ1ShMcgA&ab_channel=JoeJames, where boolean algebra is exemplified using logic circuits and bits.
 
-**NOTE**: most logical expressions used in this app will be very simple, and is possible to learn without going into the theory.
+**NOTE**: most logic used in this app is very simple, and is possible to learn without going deep into the theory.
 
 ### Logical operators
 
@@ -345,7 +396,7 @@ hyp H2 = "H2 pos" "H2 neg"
 rule R = H1.neg and H2.either
 ```
 
-The formula `H1.neg and H2.either` is equivalent to `not H1 and (H2 or not H3)`, or to be even more specific about how the formula is evaluated: `(not H1) and (H2 or (not H3))`.
+The formula `H1.neg and H2.either` is equivalent to `not H1 and (H2 or not H3)`.
 
 ### Operator precedence
 
@@ -358,7 +409,7 @@ Operators are applied in the following order, from top to bottom:
 - **impl**
 - **eq**
 
-The default precedences can be overwritten using parentheses, like normal, meaning an expression `(A op1 B) op2 C` is evaluated in the order: 
+The precedence of an operation can be changed by using parentheses; for example, an expression `(A op1 B) op2 C` is always evaluated in the order:
 
 `D = A op1 B`, then 
 
@@ -372,9 +423,7 @@ For example:
 
 `A and B and C and D and ... = ((...(A and B) and C) and D) ...`.
 
-This however is not important when only working with expressions that only involves `not`, `and`, `or`, and `xor`.
-
-##### examples
+**examples**
 
 `A and not B` is evaluated as `A and (not B)`.
 
@@ -400,9 +449,9 @@ The answer is:
 - If I want **either** of them to hold **or both**, I use `or`.
 - If I want **either** of them to hold **but not both**, I use `xor`.
 
-#### examples
+**examples**
 
-Consider the statement *It is good if Gerge becomes happy when receiving an IPAD*. If the hypotheticals are:
+Consider the statement *It is good if Gerge becomes happy when he receives an IPAD*. If the hypotheticals are:
 
 ```
 hyp GergeIPAD "Gerge get IPAD" "Gerge don't get IPAD"
@@ -417,13 +466,13 @@ because the case we are concerned with is when he receives an ipad, **and** is h
 
 `rule GergeRule = GergeIPAD.pos or GergeMood.pos is good`,
 
-would mean that if Gerge gets an IPAD, or he is happy (for whatever reason), or both, then either of those cases are good.
+would mean that if Gerge gets an IPAD, or if he is happy (for whatever reason), or both, then that's good. If he doesn't get an IPAD and is still happy, then that is still good, or if he gets an IPAD and is sad, then that is good too.
 
 ### Include every hypothetical in every rule
 
-If we have three hypotheticals `H1`, `H2` and `H3`, we should generally include all of them in every single rule, because the solutions to every rule depends on the state of every hypothetical in the system. If we are indifferent to what the value of a specific hypothetical is, then we use `.either`.
+If we have three hypotheticals in a program, `H1`, `H2` and `H3`, we should generally include all of them in every single rule, because **the solutions to every rule depends on the state of every hypothetical in the system**. If we are indifferent to what the value of a specific hypothetical is, then we use `.either`.
 
-Let's say we have three hypotheticals `H1`, `H2`, and `H3`. Consider the statement *"We want `H1` and `H2` to be true"*. 
+Let's say we have three hypotheticals `H1`, `H2`, and `H3`. Consider the statement *"We want `H1` and `H2` to be true"*.
 
 This implicitly means that we don't care about `H3`. Thus, to write this as a formula I would write:
 
@@ -443,13 +492,13 @@ which is wrong in this case, so remember to always include every hypothetical in
 
 A good way to work with this system is to follow some general rules. A simple, standard process is this:
 
-#### Hypotheticals
+**Hypotheticals**
 
 - Define the hypotheticals in a clear, concise way.
 - Go over them to make sure each one makes sense, and that they make sense when put together.
 - Use lots of comments, `//`.
 
-#### Rules
+**Rules**
 
 - Define several rules, where each rule handles one or a few specific cases.
 - Include all hypotheticals in each rule using `.either` for those you are indifferent to in each specific case.
@@ -465,13 +514,37 @@ rule MoodRule = BothGetRule or MoodRuleOnlyOne
 
 - Use the same techniques for neutral rules.
 
-#### Solvers (and comparisons)
+**Solvers (and comparisons)**
 
 Working with solvers is trivial, and would normally be reduced to the simple sequence:
 
 declare -> apply rules -> omit rules -> run -> print
 
 Comparisons are also trivial.
+
+### If all else fails - use one rule per state
+
+If finding rules to describe a group of states feels to complicated or weird, just use one rule per state. Consider a system with two hypotheticals:
+
+```
+hyp GergeIPAD "Gerge get IPAD" "Gerge don't get IPAD"
+hyp GergeMood "Gerge becomes happy" "Gerge becomes sad"
+```
+
+```
+rule TrueTrueRule   GergeIPAD.pos and GergeMood.pos is good // or 'is bad'
+rule TrueFalseRule  GergeIPAD.pos and GergeMood.neg is good // or 'is bad'
+rule FalseTrueRule  GergeIPAD.neg and GergeMood.pos is good // or 'is bad'
+rule FalseFalseRule GergeIPAD.neg and GergeMood.neg is good // or 'is bad'
+```
+
+Finally, we combine those rules into one single rule using *or*:
+
+```
+rule CompleteRule = TrueTrueRule or TrueFalseRule or FalseTrueRule or FalseFalseRule is good
+```
+
+We can cover every state here because there are only four possible states, but it blows up pretty fast: If there are three hypotheticals we would have eight states, and for four hypotheticals we would have sixteen states, and so on.
 
 ## Finding and fixing errors
 

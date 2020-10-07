@@ -1,8 +1,6 @@
 import {ResultDataSolver} from "./Interpreter";
 import {Operand, Operands, Solution} from "logic-solver";
 
-export type RuleType = 'neutral' | 'moral' | 'undiff';
-
 export type TypeID = 'hyp' | 'rule' | 'solver';
 
 export type VariableBase = {
@@ -31,6 +29,7 @@ export type SolverVariable = {
     rules: Operands[];
     pruned: Operands[];
     solverResult: SolverResult | undefined;
+    primaryHyp: string | undefined;
 } & VariableBase;
 
 export type Variable = HypVariable | RuleVariable | SolverVariable;
@@ -58,7 +57,8 @@ export const createSolverVar = (id: string, meta: string): SolverVariable => {
         meta,
         rules: [],
         pruned: [],
-        solverResult: undefined
+        solverResult: undefined,
+        primaryHyp: undefined
     };
 };
 

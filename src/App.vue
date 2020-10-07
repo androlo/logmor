@@ -19,6 +19,8 @@
                                            href="https://github.com/androlo/logmor/blob/main/docs/docs.md">Documentation</a>
                 </div>
                 <div class="footeritem"><a class="footerlink" target="_blank"
+                                           href="https://github.com/androlo/logmor/tree/main/script">Example Script</a></div>
+                <div class="footeritem"><a class="footerlink" target="_blank"
                                            href="https://github.com/androlo/androlo.github.io">Project Page</a></div>
                 <div class="footeritem"><a class="footerlink" target="_blank"
                                            href="https://github.com/androlo/logmor">Project Sources</a></div>
