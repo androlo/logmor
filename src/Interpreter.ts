@@ -41,16 +41,23 @@ export interface ConsoleMessage {
 // Comparisons. Only supports 'similarity' atm.
 export type CompDataTypeID = 'similarity';
 
+export type HypData = {
+    name: string;
+    meta: string;
+    positive: boolean;
+    primary: boolean;
+    group?: number;
+}
+
 // Result from running a solver.
 export type ResultDataSolver = {
     solverID: string;
     solverMeta: string;
-    hyps: [string, string, string][];
     numHyps: number;
     numCases: number;
-    goodStates: [string, boolean][][];
-    badStates: [string, boolean][][];
-    neutralStates: [string, boolean][][];
+    goodStates: HypData[][];
+    badStates: HypData[][];
+    neutralStates: HypData[][];
     aLevel: [number, number];
     mBalance: [number, number] | undefined;
     mEntropy: number | undefined;
@@ -67,9 +74,9 @@ export type ResultDataComp = {
     solverMeta1: string;
     solverID2: string;
     solverMeta2: string;
-    goodStates: [string, boolean][][];
-    badStates: [string, boolean][][];
-    neutralStates: [string, boolean][][];
+    goodStates: HypData[][];
+    badStates: HypData[][];
+    neutralStates: HypData[][];
     similarity: number;
     formulaRes: string;
     formulaCon: string;
@@ -275,7 +282,19 @@ export default class Interpreter extends BaseCstVisitor {
         }
         // Check that the variable id is available.
         this._checkVarName(varId, varIdToken);
-        const vari = createHypVar(varId, [meta.slice(1, -1), meta2.slice(1, -1)]);
+
+        // Check for a group ID
+        let group: number | undefined = undefined;
+        if (ctx.NUMBER !== undefined) {
+            const groupToken = this._getToken(ctx.NUMBER[0]);
+            group = parseInt(groupToken.image);
+            if (group < 1) {
+                throw InterpreterJSError.create(`Group IDs must be integers greater than 0: found '${group}'.`, 'TypeError',groupToken );
+            }
+        }
+
+        const vari = createHypVar(varId, [meta.slice(1, -1), meta2.slice(1, -1)], group);
+
         // Add to variable table.
         this.addVariable(varId, vari);
     }
@@ -424,9 +443,9 @@ export default class Interpreter extends BaseCstVisitor {
             subtype = 'similarity';
 
             // Get all the good, bad, and netural states that are common to both solvers.
-            const goodStates = getArrsByComp(results.goodStates, results2.goodStates, arrsAreEqual);
-            const badStates = getArrsByComp(results.badStates, results2.badStates, arrsAreEqual);
-            const neutralStates = getArrsByComp(results.neutralStates, results2.neutralStates, arrsAreEqual);
+            const goodStates = getHypsByComp(results.goodStates, results2.goodStates, hypsAreEqual);
+            const badStates = getHypsByComp(results.badStates, results2.badStates, hypsAreEqual);
+            const neutralStates = getHypsByComp(results.neutralStates, results2.neutralStates, hypsAreEqual);
 
             const numGoodBadStates = goodStates.length + badStates.length;
 
@@ -701,9 +720,9 @@ export default class Interpreter extends BaseCstVisitor {
         // with their meta text (for true or false), which is how they will be presented.
         // We will also use the good and neutral solutions to find what the bad solutions
         // are.
-        const goodStates: [string, boolean][][] = [];
-        const neutralStates: [string, boolean][][] = [];
-        const badStates: [string, boolean][][] = [];
+        const goodStates: HypData[][] = [];
+        const neutralStates: HypData[][] = [];
+        const badStates: HypData[][] = [];
 
         // Used to track which of the possible states are good or neutral, so we can find
         // out which states are left (which would be the bad ones).
@@ -713,19 +732,26 @@ export default class Interpreter extends BaseCstVisitor {
 
         // Create the good states from the hyp metas.
         for (let i = 0; i < goodSolutions.length; i++) {
-            const res: [string, boolean][] = new Array(numHyps);
+            const res: HypData[] = new Array(numHyps);
             const gs = goodSolutions[i];
             let bits = 0;
             for (let j = 0; j < hyps.length; j++) {
                 const hypVar = hyps[j];
-                const isPrimary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
+                const name = hypVar.id;
+                const group = hypVar.group;
+                const primary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
+                let positive: boolean;
+                let meta: string;
                 if (gs.has(hypVar.id)) {
-                    res[j] = [hypVar.meta[0], isPrimary];
+                    positive = true;
+                    meta = hypVar.meta[0];
                     // Also add this state to the bitset as occupied.
                     bits |= po2[j];
                 } else {
-                    res[j] = [hypVar.meta[1], isPrimary];
+                    positive = false;
+                    meta = hypVar.meta[1];
                 }
+                res[j] = {name, meta, positive, primary, group};
             }
             bitSet.add(bits);
             goodStates.push(res);
@@ -733,18 +759,26 @@ export default class Interpreter extends BaseCstVisitor {
 
         // Create the neutral cases. Same as for good states.
         for (let i = 0; i < neutralSolutions.length; i++) {
-            const res: [string, boolean][] = new Array(numHyps);
+            const res: HypData[] = new Array(numHyps);
             const cons = neutralSolutions[i];
             let bits = 0;
             for (let j = 0; j < hyps.length; j++) {
                 const hypVar = hyps[j];
-                const isPrimary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
+                const name = hypVar.id;
+                const group = hypVar.group;
+                const primary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
+                let positive: boolean;
+                let meta: string;
                 if (cons.has(hypVar.id)) {
-                    res[j] = [hypVar.meta[0], isPrimary];
+                    positive = true;
+                    meta = hypVar.meta[0];
+                    // Also add this state to the bitset as occupied.
                     bits |= po2[j];
                 } else {
-                    res[j] = [hypVar.meta[1], isPrimary];
+                    positive = false;
+                    meta = hypVar.meta[1];
                 }
+                res[j] = {name, meta, positive, primary, group};
             }
             neutralStates.push(res);
             bitSet.add(bits);
@@ -754,16 +788,23 @@ export default class Interpreter extends BaseCstVisitor {
         // the state is taken (i.e. good or neutral), and if not, add it to
         // the list of bad states.
         for (let i = 0; i < numCases; i++) {
-            const res: [string, boolean][] = [];
+            const res: HypData[] = [];
             if (!bitSet.has(i)) {
                 for (let j = 0; j < numHyps; j++) {
                     const hypVar = hyps[j];
-                    const isPrimary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
+                    const name = hypVar.id;
+                    const group = hypVar.group;
+                    const primary = !!solverVar.primaryHyp && solverVar.primaryHyp === hypVar.id;
+                    let positive: boolean;
+                    let meta: string;
                     if (i & po2[j]) {
-                        res[j] = [hypVar.meta[0], isPrimary];
+                        positive = true;
+                        meta = hypVar.meta[0];
                     } else {
-                        res[j] = [hypVar.meta[1], isPrimary];
+                        positive = false;
+                        meta = hypVar.meta[1];
                     }
+                    res[j] = {name, meta, positive, primary, group};
                 }
                 badStates.push(res);
             }
@@ -773,18 +814,8 @@ export default class Interpreter extends BaseCstVisitor {
         const formulaRes = formulaToString(solverVar.rules, 'and');
         const formulaCon = formulaToString(solverVar.pruned, 'and');
 
-        // We convert the variable mappings to an array since the solver results
-        // is a presentation object, and we want it to map directly to JSON.
-        // Also we want the hyps themselves as a plain array of strings.
-        const hypArr: [string, string, string][] = new Array(hyps.length);
-        for (let i = 0; i < hyps.length; i++) {
-            const hyp = hyps[i];
-            const hypID = hyp.id;
-            hypArr[i] = [hypID, hyp.meta[0], hyp.meta[1]];
-        }
 
         // Finally we create the results object.
-
         const results: ResultDataSolver = {
             solverID,
             solverMeta,
@@ -798,7 +829,6 @@ export default class Interpreter extends BaseCstVisitor {
             goodStates,
             neutralStates,
             badStates,
-            hyps: hypArr,
             formulaRes,
             formulaCon
         };
@@ -948,20 +978,20 @@ export const setsAreEqual = (s1: Set<string>, s2: Set<string>) => {
     return true;
 };
 
-export const arrsAreEqual = (arr1: [string, boolean][], arr2: [string, boolean][]): boolean => {
+export const hypsAreEqual = (arr1: HypData[], arr2: HypData[]): boolean => {
     if (arr1.length !== arr2.length) {
         return false;
     }
     for (let i = 0; i < arr1.length; i++) {
-        if (arr1[i][0] !== arr2[i][0]) {
+        if (arr1[i].positive !== arr2[i].positive) {
             return false;
         }
     }
     return true;
 };
 
-export const getArrsByComp = (arr1: [string, boolean][][], arr2: [string, boolean][][], comp: (a1: [string, boolean][], a2: [string, boolean][]) => boolean): [string, boolean][][] => {
-    const res: [string, boolean][][] = [];
+export const getHypsByComp = (arr1: HypData[][], arr2: HypData[][], comp: (a1: HypData[], a2: HypData[]) => boolean): HypData[][] => {
+    const res: HypData[][] = [];
     for (let i = 0; i < arr1.length; i++) {
         const e = arr1[i];
         for (let j = 0; j < arr2.length; j++) {

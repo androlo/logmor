@@ -10,7 +10,7 @@ import {
     TAnd, TDef, TEq, TID, TImpl, TLParen,
     TOr, TQUOTED_STRING, TRParen, TRule, TRun,
     TSolver, TXor, TSim, TCompare, TDot, TBoolLit,
-    TIs, TMoralLit, THyp, TSolverRuleOP, TPrint, TNot, TPrimary
+    TIs, TMoralLit, THyp, TSolverRuleOP, TPrint, TNot, TPrimary, TNUMBER, TRarrow
 } from './Tokens';
 import {LMParserErrorProvider} from "./Errors";
 
@@ -104,6 +104,11 @@ export class Parser extends CstParser {
 
     private readonly hypDeclaration = this.RULE('hypDeclaration', () => {
         this.CONSUME(THyp);
+        this.OPTION(() => {
+            this.CONSUME(TLParen);
+            this.CONSUME(TNUMBER);
+            this.CONSUME(TRParen);
+        });
         this.CONSUME(TID);
         this.CONSUME(TQUOTED_STRING);
         this.CONSUME2(TQUOTED_STRING);

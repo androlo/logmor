@@ -76,6 +76,7 @@ export const TImpl = createChevToken({ name: 'Impl', pattern: /impl/, categories
 export const TEq = createChevToken({ name: 'Eq', pattern: /eq/, categories: [TKeyword] });
 
 // Misc
+export const TRarrow = createChevToken({ name: 'RArrow', pattern: /->/ });
 export const TLParen = createChevToken({ name: 'LParen', pattern: /\(/ });
 export const TRParen = createChevToken({ name: 'RParen', pattern: /\)/ });
 export const TLCurly = createChevToken({ name: 'LCurly', pattern: /{/ });
@@ -83,7 +84,8 @@ export const TRCurly = createChevToken({ name: 'RCurly', pattern: /}/ });
 export const TDot = createChevToken({ name: 'Dot', pattern: /\./ });
 
 // ID
-export const TID = createChevToken({ name: 'ID', pattern: /\w+/ });
+export const TID = createChevToken({ name: 'ID', pattern: /\p{L}+[\p{L}|\p{N}]*/u });
+export const TNUMBER = createChevToken({ name: 'NUMBER', pattern: /\p{N}+/u });
 export const TQUOTED_STRING = createChevToken({ name: 'QUOTED_STRING', pattern: /"([^\n\r"])*"/ });
 
 export const allKeywords: string[] = [];

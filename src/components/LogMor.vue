@@ -8,6 +8,7 @@
                 <div class="md-headline" style="margin-bottom: 0.3em;text-align: center; color: #474747">
                     νερςιοη 0.1 (βετα)
                 </div>
+
                 <div class="md-layout" style="margin-bottom: 0.5em;">
                     <div class="md-layout-item md-size-15">
                         <v-select v-model="theme" :clearable="false" id="theme" @input="themeSelected"
@@ -294,11 +295,11 @@ const JERY_AND_GERGE = `/*
 /* Hypothetical declarations */
 
 // 1. Gerge and Jery may or may not receive IPADS.
-hyp GergeIPAD "Gerge get IPAD" "Gerge don't get IPAD"
-hyp JeryIPAD \t"Jery get IPAD"  "Jery don't get IPAD"
+hyp GergeIPAD "Gerge get IPAD ✔️💻" "Gerge don't get IPAD ❌💻"
+hyp JeryIPAD \t"Jery get IPAD ✔️💻"  "Jery don't get IPAD ❌💻"
 
 // 2. Gerges reaction to him and Jery receiving, or not receiving, IPADs.
-hyp GergeMood "Gerge becomes happy" "Gerge becomes sad"
+hyp GergeMood "Gerge becomes happy 😃" "Gerge becomes sad ☹️"
 
 /* Rule declarations */
 
@@ -318,20 +319,31 @@ rule IPADIndifferenceRule = (GergeIPAD.neg and JeryIPAD.neg).neg and GergeMood.e
 /* Solver declaration */
 
 solver GergeSolver "My Gerge solver"
+// solver GergeSolver2 "My Gerge solver 2"
 
 /* Solver operations */
 
 // Apply the fairness rule.
 solver GergeSolver apply MoodRule
+// solver GergeSolver2 apply BothGetRule
 
 // Omit the cases that we are indifferent to.
 solver GergeSolver omit IPADIndifferenceRule
 
+// Set 'GergeMood' to be the primary hypothetical, meaning this is the hypothetical that
+// we consider primary, while the others are just there to affect our judgement.
+// (this is entirely optional)
+solver GergeSolver primary GergeMood
+
 // Run the solver
 solver GergeSolver run
+// solver GergeSolver2 run
 
 // Print the results
-solver GergeSolver print`;
+solver GergeSolver print
+// solver GergeSolver2 print
+
+// compare sim GergeSolver GergeSolver`;
 
 </script>
 

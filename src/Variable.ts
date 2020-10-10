@@ -10,6 +10,7 @@ export type VariableBase = {
 export type HypVariable = {
     readonly type: 'hyp';
     readonly meta: [string, string];
+    readonly group?: number
 } & VariableBase;
 
 export type RuleVariable = {
@@ -34,11 +35,12 @@ export type SolverVariable = {
 
 export type Variable = HypVariable | RuleVariable | SolverVariable;
 
-export const createHypVar = (id: string, meta: [string, string]): HypVariable => {
+export const createHypVar = (id: string, meta: [string, string], group?: number): HypVariable => {
     return {
         id,
         type: 'hyp',
-        meta
+        meta,
+        group
     };
 };
 

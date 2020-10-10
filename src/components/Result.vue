@@ -11,12 +11,7 @@
             <md-list style="">
                 <md-list-item class="statelist"
                               v-for="(goodState, idx) in result.goodStates" v-bind:key="idx">
-                    <div class="chiplist">
-                        <md-chip class="md-primary greenchip"
-                                 v-for="(state, idxInner) in goodState" :key="idxInner">
-                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
-                        </md-chip>
-                    </div>
+                    <StateChips v-bind:states="goodState" listClass="md-primary greenchip"/>
                 </md-list-item>
             </md-list>
             <div class="md-body-2">Morally Bad States</div>
@@ -24,12 +19,7 @@
                 <md-list-item
                     class="statelist"
                     v-for="(badState, idx) in result.badStates" v-bind:key="idx">
-                    <div class="chiplist">
-                        <md-chip class="md-primary redchip"
-                                 v-for="(state, idxInner) in badState" :key="idxInner">
-                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
-                        </md-chip>
-                    </div>
+                    <StateChips v-bind:states="badState" listClass="md-primary redchip"/>
                 </md-list-item>
             </md-list>
             <div class="md-body-2">Morally Neutral States</div>
@@ -37,12 +27,7 @@
                 <md-list-item
                     class="statelist"
                     v-for="(neutralState, idx) in result.neutralStates" v-bind:key="idx">
-                    <div class="chiplist">
-                        <md-chip class="md-primary bluechip" v-for="(state, idxInner) in neutralState"
-                                 :key="idxInner">
-                            {{ state[0] + (state[1] ? ' (primary)' : '') }}
-                        </md-chip>
-                    </div>
+                    <StateChips v-bind:states="neutralState" listClass="md-primary bluechip"/>
                 </md-list-item>
             </md-list>
             <md-switch v-model="additionalInfo" class="md-primary">Additional information</md-switch>
@@ -201,10 +186,15 @@ import Component from "vue-class-component";
 import Vue from "vue";
 import {Prop} from "vue-property-decorator";
 import {ResultDataSolver} from "../Interpreter";
+import StateChips from './StateChips.vue';
 
-@Component
+@Component({
+    components: {
+        StateChips
+    }
+})
 export default class Result extends Vue {
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+
     @Prop({
         default: () => {
         }
