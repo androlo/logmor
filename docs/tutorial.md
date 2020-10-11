@@ -4,13 +4,6 @@ This tutorial explains the basics of how LogMor works, and how to create a simpl
 
 Several examples of LogMor script can also be found here: https://github.com/androlo/logmor/tree/main/script. You can click on a file to open it, then copy the script into the [LogMor app](https://androlo.github.io/) to get syntax highlighting and to run it.
 
-- [What this program is](#what-this-program-is)
-  * [Logical rules and SAT-solvers](#logical-rules-and-sat-solvers)
-    + [1 - Boolean variables](#1---boolean-variables)
-    + [2 - The state space](#2---the-state-space)
-    + [3 - Formulas](#3---formulas)
-    + [SAT-solvers](#sat-solvers)
-    + [How LogMor works](#how-logmor-works)
 - [Script](#script)
   * [1 - Declaring hypotheticals](#1---declaring-hypotheticals)
   * [2 - Declaring rules](#2---declaring-rules)
@@ -19,21 +12,24 @@ Several examples of LogMor script can also be found here: https://github.com/and
     + [Moral judgements](#moral-judgements)
     + [Continuing on...](#continuing-on)
     + [Neutral rules](#neutral-rules)
-  * [3 - Declaring solvers](#3---declaring-solvers)
-  * [4 - Working with solvers](#4---working-with-solvers)
+  * [3 - Solvers](#3---solvers)
     + [Adding rules](#adding-rules)
     + [Running solvers](#running-solvers)
     + [Printing the result of a solver](#printing-the-result-of-a-solver)
   * [5 Comparisons](#5-comparisons)
   * [6 Output](#6-output)
     + [Solver print](#solver-print)
-      - [Level of amorality](#level-of-amorality)
-      - [Permissiveness](#permissiveness)
-      - [Moral sophistication](#moral-sophistication)
-      - [Moral entropy](#moral-entropy)
+- [LogMor in-depth](#logmor-in-depth)
+  * [Logical rules and SAT-solvers](#logical-rules-and-sat-solvers)
+    + [1 - Boolean variables](#1---boolean-variables)
+    + [2 - The state space](#2---the-state-space)
+    + [3 - Formulas](#3---formulas)
+    + [The SAT-solver](#the-sat-solver)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
+
+## Script
 
 In this tutorial we will go over the basic parts of a simple program:
 
@@ -76,8 +72,6 @@ solver MySolver print
 ```
 
 This code can be copied and pasted into the editor window of the LogMor app without modifications. It is recommended to run this code in the app to get the output, which can then be used as a reference when reading the tutorial section about output.
-
-## Script
 
 This example is a very simple script containing three hypotheticals, one main moral rule as a conjunction of two others, one indifference rule, and one solver. We will start by going over its main parts.
 
