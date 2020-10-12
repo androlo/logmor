@@ -294,7 +294,8 @@ const JERY_AND_GERGE = `/*
 
 /* Hypothetical declarations */
 
-// 1. Gerge and Jery may or may not receive IPADS.
+// 1. Gerge and Jery may or may not receive IPADS. Each hypothetical is given
+// both the positive (the first quoted string) and the negative.
 hyp GergeIPAD "Gerge get IPAD ✔️💻" "Gerge don't get IPAD ❌💻"
 hyp JeryIPAD \t"Jery get IPAD ✔️💻"  "Jery don't get IPAD ❌💻"
 
@@ -307,25 +308,23 @@ hyp GergeMood "Gerge becomes happy 😃" "Gerge becomes sad ☹️"
 rule BothGetRule = GergeIPAD.pos and JeryIPAD.pos and GergeMood.pos is good
 
 // If one of them gets an IPAD but not the other, Gerge should be sad.
-rule MoodRuleOnlyOne = (GergeIPAD.pos xor JeryIPAD.pos) and not GergeMood is good
+rule MoodRuleOnlyOne = (GergeIPAD.pos xor JeryIPAD.pos) and GergeMood.neg is good
 
 // The two rules above combined into one.
 rule MoodRule = BothGetRule or MoodRuleOnlyOne
 
 // If neither of the two gets an IPAD we will be indifferent, regardless of
 // what Gerge's mood is.
-rule IPADIndifferenceRule = (GergeIPAD.neg and JeryIPAD.neg).neg and GergeMood.either
+rule IPADIndifferenceRule = GergeIPAD.neg and JeryIPAD.neg and GergeMood.either
 
 /* Solver declaration */
 
 solver GergeSolver "My Gerge solver"
-// solver GergeSolver2 "My Gerge solver 2"
 
 /* Solver operations */
 
 // Apply the fairness rule.
 solver GergeSolver apply MoodRule
-// solver GergeSolver2 apply BothGetRule
 
 // Omit the cases that we are indifferent to.
 solver GergeSolver omit IPADIndifferenceRule
@@ -337,13 +336,9 @@ solver GergeSolver primary GergeMood
 
 // Run the solver
 solver GergeSolver run
-// solver GergeSolver2 run
 
 // Print the results
-solver GergeSolver print
-// solver GergeSolver2 print
-
-// compare sim GergeSolver GergeSolver`;
+solver GergeSolver print`;
 
 </script>
 
