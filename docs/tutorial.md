@@ -73,7 +73,7 @@ solver MySolver print
 
 This code can be copied and pasted into the editor window of the LogMor app without modifications. It is recommended to run this code in the app to get the output, which can then be used as a reference when reading the tutorial section about output.
 
-This example is a very simple script containing three hypotheticals, one main moral rule as a conjunction of two others, one indifference rule, and one solver. We will start by going over its main parts.
+This example is a very simple script containing two hypotheticals, one main good-or-bad rule, one indifference rule, and one solver. We will start by going over its main parts.
 
 A script is made up of six sections:
 
