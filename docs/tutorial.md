@@ -75,7 +75,7 @@ This code can be copied and pasted into the editor window of the LogMor app with
 
 This example is a very simple script containing two hypotheticals, one main good-or-bad rule, one indifference rule, and one solver. We will start by going over its main parts.
 
-A script is made up of six sections:
+A script is made up of five sections:
 
 1. Declaration of hypotheticals.
 2. Declaration of rules.
