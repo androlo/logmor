@@ -104,7 +104,7 @@ hyp FoodTheft "Person X stole some food." "Person X did not steal any food."
 We now have a *boolean variable* named `FoodTheft` that can be either `true` or `false`, meaning we allow for the case where person X stole some food, and the case where person X didn't steal any food.
 
 - If `FoodTheft` is `true`, we interpret that using the first text, meaning person X stole some food.
-- If `FoodTheft` is `true`, we interpret that using the first text, meaning person X stole some food.
+- If `FoodTheft` is `false`, we interpret that using the second text, meaning person X didn't steal any food.
 
 We don't have to worry too much about the structure of the text, though, because this program does not analyze the text inside of statements, although is of course important that everyone is clear about what the text actually means.
 
