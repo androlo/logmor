@@ -128,7 +128,7 @@ To make it abundantly clear what the hypotheticals are when combined, we could w
 ```
 // (true, true)  : person X stole food because his children were starving.
 // (true, false) : person X stole food even though his children already had food to eat.
-// (false, true) : person X did not steal any food even though his children are starving.
+// (false, true) : person X did not steal any food even though his children were starving.
 // (false; false): person X did not steal any food because his children already had food to eat.
 ```
 
