@@ -11,7 +11,7 @@ hyp KillingHyp "Jery killed Gerge." "Jery did not kill Gerge."
  * (or will not) have killed Gerge as a response to Gerge attacking him (or not).
  *
  * true + true: Jery killed Gerge in self defense, because Gerge attacked him.
- * true + false: Jery killed Gerge unprovoced.
+ * true + false: Jery killed Gerge unprovoked.
  * false + true: Jery did not kill Gerge, even though Gerge attacked him.
  * false + false: Jery did not kill Gerge, and Gerge did not attack Jery.
  *

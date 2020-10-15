@@ -283,19 +283,18 @@ const THEME_OPTIONS = [
 
 const JERY_AND_GERGE = `/*
  * This script implements a morality about fairness. Two people, Jery and Gerge, may or may not receive IPADs,
- * and the morality applies to Gerges mood when those IPADs are received. The morality states that Gerge should:
+ * The morality states that Gerge should:
  *\t
- *  1. be happy only if they both get an IPAD.
- *\t2. be sad if only one of them gets an IPAD and not the other.
+ *  1. be happy if they both get an IPAD.
+ *\t2. be sad if one of them gets an IPAD but not the other.
  *
- * If neither of them receives an IPAD the morality does not apply, meaning that case (or those cases, rather)
- * are flagged as neutral.
+ * If neither of them gets an IPAD the morality does not apply, meaning those cases are flagged as neutral.
  */
 
 /* Hypothetical declarations */
 
 // 1. Gerge and Jery may or may not receive IPADS. Each hypothetical is given
-// both the positive (the first quoted string) and the negative.
+// in both the positive (the first quoted string) and in the negative.
 hyp GergeIPAD "Gerge get IPAD ✔️💻" "Gerge don't get IPAD ❌💻"
 hyp JeryIPAD \t"Jery get IPAD ✔️💻"  "Jery don't get IPAD ❌💻"
 
@@ -310,7 +309,7 @@ rule BothGetRule = GergeIPAD.pos and JeryIPAD.pos and GergeMood.pos is good
 // If one of them gets an IPAD but not the other, Gerge should be sad.
 rule MoodRuleOnlyOne = (GergeIPAD.pos xor JeryIPAD.pos) and GergeMood.neg is good
 
-// The two rules above combined into one.
+// The two rules above are now combined into one.
 rule MoodRule = BothGetRule or MoodRuleOnlyOne
 
 // If neither of the two gets an IPAD we will be indifferent, regardless of
