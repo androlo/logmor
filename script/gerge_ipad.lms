@@ -1,5 +1,5 @@
 /*
- * This script implements a morality about fairness. Two people, Jery and Gerge, may or may not receive IPADs,
+ * This script implements a morality about fairness. Two people, Jery and Gerge, may or may not receive IPADs.
  * The morality states that Gerge should:
  *
  *  1. be happy if they both get an IPAD.
@@ -20,10 +20,10 @@ hyp GergeMood "Gerge becomes happy 😃" "Gerge becomes sad ☹️"
 
 /* Rule declarations */
 
-// If both gets an IPAD, Gerge should be happy.
+// If both gets an IPAD, it is good if Gerge is happy.
 rule BothGetRule = GergeIPAD.pos and JeryIPAD.pos and GergeMood.pos is good
 
-// If one of them gets an IPAD but not the other, Gerge should be sad.
+// If one of them gets an IPAD but not the other, it is good if Gerge is sad.
 rule MoodRuleOnlyOne = (GergeIPAD.pos xor JeryIPAD.pos) and GergeMood.neg is good
 
 // The two rules above are now combined into one.
@@ -35,6 +35,7 @@ rule IPADIndifferenceRule = GergeIPAD.neg and JeryIPAD.neg and GergeMood.either
 
 /* Solver declaration */
 
+// Create a solver object which will compute the morality of every possible state.
 solver GergeSolver "My Gerge solver"
 
 /* Solver operations */
@@ -46,7 +47,7 @@ solver GergeSolver apply MoodRule
 solver GergeSolver omit IPADIndifferenceRule
 
 // Set 'GergeMood' to be the primary hypothetical, meaning this is the hypothetical that
-// we consider primary, while the others are just there to affect our judgement.
+// the judgement is essentially about, while the others are just there to affect our judgement.
 // (this is entirely optional)
 solver GergeSolver primary GergeMood
 
